@@ -13,8 +13,6 @@
 <li>Changed order of annotations to enable drawing of user location marker above route
 </ul>
 
-<br>
-
 <h2 style="margin: 0.0px 0.0px 10.0px 0.0px; font: 20.0px Helvetica"><b>Dependent Libraries</b></h2>
 <ul>
 <li><a href="https://github.com/ccgus/fmdb">FMDB</a> by Gus Mueller (SQLite for caching and MBTiles)</li>
