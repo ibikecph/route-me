@@ -61,7 +61,15 @@
 #define kDefaultMaximumZoomLevel 25.0
 #define kDefaultInitialZoomLevel 13.0
 
+#define kDefaultHeadingFilter 5
+
 #pragma mark --- end constants ----
+
+@interface RMMapView()
+
+@property (nonatomic, retain) CLLocation *cachedLocation;
+
+@end
 
 @interface RMMapView (PrivateMethods) <UIScrollViewDelegate, UIGestureRecognizerDelegate, RMMapScrollViewDelegate, CLLocationManagerDelegate>
 
@@ -160,6 +168,8 @@
 
     CLLocationManager *_locationManager;
 
+    double lastLocUpdatedTime;
+
     RMAnnotation *_accuracyCircleAnnotation;
     RMAnnotation *_trackingHaloAnnotation;
 
@@ -173,6 +183,7 @@
     NSOperationQueue *_moveDelegateQueue;
     NSOperationQueue *_zoomDelegateQueue;
 }
+
 
 @synthesize decelerationMode = _decelerationMode;
 
@@ -194,6 +205,10 @@
 @synthesize displayHeadingCalibration = _displayHeadingCalibration;
 @synthesize missingTilesDepth = _missingTilesDepth;
 @synthesize debugTiles = _debugTiles;
+@synthesize triggerUpdateOnHeadingChange = _triggerUpdateOnHeadingChange;
+@synthesize rotateOnHeadingChange = _rotateOnHeadingChange;
+@synthesize cachedLocation = _cachedLocation;
+
 
 #pragma mark -
 #pragma mark Initialization
@@ -281,6 +296,9 @@
                                              selector:@selector(handleDidChangeOrientationNotification:)
                                                  name:UIApplicationDidChangeStatusBarOrientationNotification
                                                object:nil];
+    
+    _triggerUpdateOnHeadingChange = YES;
+    _rotateOnHeadingChange = YES;
 
     RMLog(@"Map initialised. tileSource:%@, minZoom:%f, maxZoom:%f, zoom:%f at {%f,%f}", newTilesource, self.minZoom, self.maxZoom, self.zoom, initialCenterCoordinate.longitude, initialCenterCoordinate.latitude);
 }
@@ -1211,6 +1229,7 @@
 
 - (void)scrollViewWillBeginZooming:(UIScrollView *)scrollView withView:(UIView *)view
 {
+//    RMLog(@"scrollViewWillBeginZooming()");
     [self registerZoomEventByUser:(scrollView.pinchGestureRecognizer.state == UIGestureRecognizerStateBegan)];
 
     _mapScrollViewIsZooming = YES;
@@ -1221,6 +1240,7 @@
 
 - (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(UIView *)view atScale:(float)scale
 {
+//    RMLog(@"scrollViewDidEndZooming()");
     [_moveDelegateQueue setSuspended:NO];
     [_zoomDelegateQueue setSuspended:NO];
 
@@ -1244,9 +1264,11 @@
 
 - (void)scrollViewDidZoom:(UIScrollView *)scrollView
 {
+    RMLog(@"scrollViewDidZoom()");
+
     BOOL wasUserAction = (scrollView.pinchGestureRecognizer.state == UIGestureRecognizerStateChanged);
 
-    [self registerZoomEventByUser:wasUserAction];
+//    [self registerZoomEventByUser:wasUserAction];
 
     if (self.userTrackingMode != RMUserTrackingModeNone && wasUserAction)
         self.userTrackingMode = RMUserTrackingModeNone;
@@ -2568,8 +2590,9 @@
 
 - (void)correctOrderingOfAllAnnotations
 {
-    if ( ! _orderMarkersByYPosition)
+    if ( ! _orderMarkersByYPosition) {
         return;
+    }
 
     // sort annotation layer z-indexes so that they overlap properly
     //
@@ -2582,6 +2605,13 @@
          RMAnnotation *annotation1 = (RMAnnotation *)obj1;
          RMAnnotation *annotation2 = (RMAnnotation *)obj2;
 
+         if (annotation1.isUserLocationAnnotation) {
+             return NSOrderedDescending;
+         }
+         if (annotation2.isUserLocationAnnotation) {
+             return NSOrderedAscending;
+         }
+         
          // clusters above/below non-clusters (based on _orderClusterMarkersAboveOthers)
          //
          if (   [annotation1.annotationType isEqualToString:kRMClusterAnnotationTypeName] && ! [annotation2.annotationType isEqualToString:kRMClusterAnnotationTypeName])
@@ -2614,6 +2644,8 @@
 
     for (CGFloat i = 0; i < [sortedAnnotations count]; i++)
         ((RMAnnotation *)[sortedAnnotations objectAtIndex:i]).layer.zPosition = (CGFloat)i;
+    
+    RMLog(@"Sorted annotations: %@", sortedAnnotations);
 }
 
 - (NSArray *)annotations
@@ -2713,6 +2745,10 @@
 #pragma mark -
 #pragma mark User Location
 
+#define CACHE_UPDATE_INTERVAL 5.0 // in seconds
+#define ACCURACY_GREAT 20.0 // location with accuracy better then this will be updated immediately
+#define ACCURACY_JUNK 50.0 // location with accuracy worse then this will be discarded
+
 - (void)setShowsUserLocation:(BOOL)newShowsUserLocation
 {
     if (newShowsUserLocation == _showsUserLocation)
@@ -2732,10 +2768,14 @@
             [_delegate mapViewWillStartLocatingUser:self];
 
         self.userLocation = [RMUserLocation annotationWithMapView:self coordinate:CLLocationCoordinate2DMake(MAXFLOAT, MAXFLOAT) andTitle:nil];
+        self.userLocation.layer.zPosition = MAXFLOAT;
 
         _locationManager = [[CLLocationManager alloc] init];
-        _locationManager.headingFilter = 5.0;
+        _locationManager.headingFilter = kDefaultHeadingFilter;
+        _locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation;
         _locationManager.delegate = self;
+        lastLocUpdatedTime = 0.0;
+        self.cachedLocation = nil;
         [_locationManager startUpdatingLocation];
     }
     else
@@ -2744,6 +2784,8 @@
         [_locationManager stopUpdatingHeading];
         _locationManager.delegate = nil;
         [_locationManager release]; _locationManager = nil;
+        lastLocUpdatedTime = 0.0;
+        self.cachedLocation = nil;
 
         if (_delegateHasDidStopLocatingUser)
             [_delegate mapViewDidStopLocatingUser:self];
@@ -2909,7 +2951,7 @@
             for (NSString *animationKey in _trackingHaloAnnotation.layer.animationKeys)
                 [_userHaloTrackingView.layer addAnimation:[[[_trackingHaloAnnotation.layer animationForKey:animationKey] copy] autorelease] forKey:animationKey];
 
-            [self insertSubview:_userHaloTrackingView belowSubview:_overlayView];
+            [self insertSubview:_userHaloTrackingView aboveSubview:_overlayView]; //changed to make the usertracking appear over the map. was below
 
             _userHeadingTrackingView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"HeadingAngleSmall.png"]];
 
@@ -2927,7 +2969,7 @@
 
             _userHeadingTrackingView.alpha = 0.0;
 
-            [self insertSubview:_userHeadingTrackingView belowSubview:_overlayView];
+            [self insertSubview:_userHeadingTrackingView aboveSubview:_overlayView]; //changed to make the usertracking appear over the map.  was below
 
             _userLocationTrackingView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"TrackingDot.png"]];
 
@@ -2939,7 +2981,7 @@
                                                          UIViewAutoresizingFlexibleTopMargin   |
                                                          UIViewAutoresizingFlexibleBottomMargin;
             
-            [self insertSubview:_userLocationTrackingView aboveSubview:_userHeadingTrackingView];
+            [self insertSubview:_userLocationTrackingView aboveSubview:_overlayView]; //changed to make the usertracking appear over the map. was below:_userHeadingTrackingView
 
             if (self.zoom < 3)
                 [self zoomByFactor:exp2f(3 - [self zoom]) near:self.center animated:YES];
@@ -2959,8 +3001,52 @@
         [_delegate mapView:self didChangeUserTrackingMode:_userTrackingMode animated:animated];
 }
 
+// Filter best locations
+// Returns nil if location should not be processed further
+- (CLLocation *)smoothLocation:(CLLocation *)loc {
+    
+    if (lastLocUpdatedTime == 0.0)
+        lastLocUpdatedTime = CACurrentMediaTime();
+
+    if ((int)loc.coordinate.latitude == 0 && (int)loc.coordinate.longitude == 0) {
+        RMLog(@"Skipping location 0.0, 0.0! (You cannot walk on the water)");
+        return nil;
+    }
+
+    if (loc.horizontalAccuracy > ACCURACY_JUNK) {
+        RMLog(@"Low accuracy! Skipping location %f %f %.1f!", loc.coordinate.latitude, loc.coordinate.longitude, loc.horizontalAccuracy);
+        return nil;
+    }
+
+    // check if we should use/cache this location:
+    if (loc.horizontalAccuracy < 0) {
+        // update with this location but don't cache it
+        RMLog(@"No accuracy!");
+        self.cachedLocation = nil;
+        lastLocUpdatedTime = CACurrentMediaTime();
+        return loc;
+    }
+    else {
+        if (self.cachedLocation == nil || loc.horizontalAccuracy < self.cachedLocation.horizontalAccuracy) {
+            self.cachedLocation = loc;
+            // caching location:
+			RMLog(@"Caching location: %f %f accuracy: %.1f", loc.coordinate.latitude, loc.coordinate.longitude, loc.horizontalAccuracy);
+        }
+        if ((CACurrentMediaTime() - lastLocUpdatedTime) > CACHE_UPDATE_INTERVAL || (int)self.cachedLocation.horizontalAccuracy < ACCURACY_GREAT) {
+            RMLog(@"Updating with cached location");
+            lastLocUpdatedTime = CACurrentMediaTime();
+            self.cachedLocation = nil; // invalidate used location
+            return loc;
+        }
+    }
+    return nil;
+}
+
 - (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation
 {
+    if (!newLocation || ![self smoothLocation:newLocation])
+        return;
+    
     if ( ! _showsUserLocation || _mapScrollView.isDragging || ! newLocation || ! CLLocationCoordinate2DIsValid(newLocation.coordinate))
         return;
 
@@ -3022,7 +3108,7 @@
         _accuracyCircleAnnotation.clusteringEnabled = NO;
         _accuracyCircleAnnotation.enabled = NO;
         _accuracyCircleAnnotation.layer = [[RMCircle alloc] initWithView:self radiusInMeters:newLocation.horizontalAccuracy];
-        _accuracyCircleAnnotation.layer.zPosition = -MAXFLOAT;
+        _accuracyCircleAnnotation.layer.zPosition = MAXFLOAT - 2; // was -MAXFLOAT
         _accuracyCircleAnnotation.isUserLocationAnnotation = YES;
 
         ((RMCircle *)_accuracyCircleAnnotation.layer).lineColor = [UIColor colorWithRed:0.378 green:0.552 blue:0.827 alpha:0.7];
@@ -3049,7 +3135,7 @@
         // create image marker
         //
         _trackingHaloAnnotation.layer = [[RMMarker alloc] initWithUIImage:[UIImage imageNamed:@"TrackingDotHalo.png"]];
-        _trackingHaloAnnotation.layer.zPosition = -MAXFLOAT + 1;
+        _trackingHaloAnnotation.layer.zPosition = MAXFLOAT - 1; //-MAXFLOAT + 1;
         _trackingHaloAnnotation.isUserLocationAnnotation = YES;
 
         [CATransaction begin];
@@ -3113,14 +3199,14 @@
 - (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading
 {
     if ( ! _showsUserLocation || _mapScrollView.isDragging || newHeading.headingAccuracy < 0)
-        return;
+        return;	
 
     self.userLocation.heading = newHeading;
 
-    if (_delegateHasDidUpdateUserLocation)
+    if (_delegateHasDidUpdateUserLocation && _triggerUpdateOnHeadingChange)
         [_delegate mapView:self didUpdateUserLocation:self.userLocation];
 
-    if (newHeading.trueHeading != 0 && self.userTrackingMode == RMUserTrackingModeFollowWithHeading)
+    if (self.userLocation.location.speed > 0.5 && newHeading.trueHeading != 0 && self.userTrackingMode == RMUserTrackingModeFollowWithHeading)
     {
         if (_userHeadingTrackingView.alpha < 1.0)
             [UIView animateWithDuration:0.5 animations:^(void) { _userHeadingTrackingView.alpha = 1.0; }];
@@ -3135,6 +3221,8 @@
                          animations:^(void)
                          {
                              CGFloat angle = (M_PI / -180) * newHeading.trueHeading;
+                             if (self.userLocation.location.course >= 0)
+                                 angle = (M_PI / -180) * self.userLocation.location.course;
 
                              _mapTransform = CGAffineTransformMakeRotation(angle);
                              _annotationTransform = CATransform3DMakeAffineTransform(CGAffineTransformMakeRotation(-angle));
