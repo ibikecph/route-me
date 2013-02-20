@@ -10,7 +10,7 @@
 <p>Major differences from Alpstein fork of Route-Me:
 <ul>
 <li>I Bike CPH map tile source integration code.</li>
-<li>Changed order of annotations to enable drawing of user location marker above route
+<li>Changed z order of annotations to enable drawing of user location marker above route
 </ul>
 
 <h2 style="margin: 0.0px 0.0px 10.0px 0.0px; font: 20.0px Helvetica"><b>Dependent Libraries</b></h2>
