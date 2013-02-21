@@ -1264,7 +1264,7 @@
 
 - (void)scrollViewDidZoom:(UIScrollView *)scrollView
 {
-    RMLog(@"scrollViewDidZoom()");
+//    RMLog(@"scrollViewDidZoom()");
 
     BOOL wasUserAction = (scrollView.pinchGestureRecognizer.state == UIGestureRecognizerStateChanged);
 
