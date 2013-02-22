@@ -2857,27 +2857,28 @@
         {
             [_locationManager stopUpdatingHeading];
 
-            [CATransaction setAnimationDuration:0.5];
-            [CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
-
-            [UIView animateWithDuration:(animated ? 0.5 : 0.0)
-                                  delay:0.0
-                                options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationCurveEaseInOut
-                             animations:^(void)
-                             {
-                                 _mapTransform = CGAffineTransformIdentity;
-                                 _annotationTransform = CATransform3DIdentity;
-
-                                 _mapScrollView.transform = _mapTransform;
-                                 _overlayView.transform   = _mapTransform;
-
-                                 for (RMAnnotation *annotation in _annotations)
-                                     if ([annotation.layer isKindOfClass:[RMMarker class]] && ! annotation.isUserLocationAnnotation)
-                                         annotation.layer.transform = _annotationTransform;
-                             }
-                             completion:nil];
-
-            [CATransaction commit];
+            // Spoiled Milk update: we don't want map to reset rotation when user starts scrolling the map.
+//            [CATransaction setAnimationDuration:0.5];
+//            [CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
+//
+//            [UIView animateWithDuration:(animated ? 0.5 : 0.0)
+//                                  delay:0.0
+//                                options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationCurveEaseInOut
+//                             animations:^(void)
+//                             {
+//                                 _mapTransform = CGAffineTransformIdentity;
+//                                 _annotationTransform = CATransform3DIdentity;
+//
+//                                 _mapScrollView.transform = _mapTransform;
+//                                 _overlayView.transform   = _mapTransform;
+//
+//                                 for (RMAnnotation *annotation in _annotations)
+//                                     if ([annotation.layer isKindOfClass:[RMMarker class]] && ! annotation.isUserLocationAnnotation)
+//                                         annotation.layer.transform = _annotationTransform;
+//                             }
+//                             completion:nil];
+//
+//            [CATransaction commit];
 
             if (_userLocationTrackingView || _userHeadingTrackingView || _userHaloTrackingView)
             {
@@ -3030,10 +3031,10 @@
         if (self.cachedLocation == nil || loc.horizontalAccuracy < self.cachedLocation.horizontalAccuracy) {
             self.cachedLocation = loc;
             // caching location:
-			RMLog(@"Caching location: %f %f accuracy: %.1f", loc.coordinate.latitude, loc.coordinate.longitude, loc.horizontalAccuracy);
+//			RMLog(@"Caching location: %f %f accuracy: %.1f", loc.coordinate.latitude, loc.coordinate.longitude, loc.horizontalAccuracy);
         }
         if ((CACurrentMediaTime() - lastLocUpdatedTime) > CACHE_UPDATE_INTERVAL || (int)self.cachedLocation.horizontalAccuracy < ACCURACY_GREAT) {
-            RMLog(@"Updating with cached location");
+//            RMLog(@"Updating with cached location");
             lastLocUpdatedTime = CACurrentMediaTime();
             self.cachedLocation = nil; // invalidate used location
             return loc;
