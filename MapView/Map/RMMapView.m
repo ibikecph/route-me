@@ -2749,7 +2749,7 @@
 
 #define CACHE_UPDATE_INTERVAL 5.0 // in seconds
 #define ACCURACY_GREAT 20.0 // location with accuracy better then this will be updated immediately
-#define ACCURACY_JUNK 50.0 // location with accuracy worse then this will be discarded
+#define ACCURACY_JUNK 1000.0 // location with accuracy worse then this will be discarded
 
 - (void)setShowsUserLocation:(BOOL)newShowsUserLocation
 {
@@ -3007,7 +3007,9 @@
 // Filter best locations
 // Returns nil if location should not be processed further
 - (CLLocation *)smoothLocation:(CLLocation *)loc {
-    
+    if (!loc)
+        return nil;
+
     if (lastLocUpdatedTime == 0.0)
         lastLocUpdatedTime = CACurrentMediaTime();
 
@@ -3038,6 +3040,7 @@
         if ((CACurrentMediaTime() - lastLocUpdatedTime) > CACHE_UPDATE_INTERVAL || (int)self.cachedLocation.horizontalAccuracy < ACCURACY_GREAT) {
 //            RMLog(@"Updating with cached location");
             lastLocUpdatedTime = CACurrentMediaTime();
+            loc = self.cachedLocation;
             self.cachedLocation = nil; // invalidate used location
             return loc;
         }
@@ -3047,7 +3050,7 @@
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation
 {
-    if (!newLocation || ![self smoothLocation:newLocation])
+    if (!newLocation || !(newLocation = [self smoothLocation:newLocation]))
         return;
     
     if ( ! _showsUserLocation || _mapScrollView.isDragging || ! newLocation || ! CLLocationCoordinate2DIsValid(newLocation.coordinate))
