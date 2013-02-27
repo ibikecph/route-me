@@ -61,7 +61,7 @@
 #define kDefaultMaximumZoomLevel 25.0
 #define kDefaultInitialZoomLevel 13.0
 
-#define kDefaultHeadingFilter 5
+#define kDefaultHeadingFilter 10
 
 #pragma mark --- end constants ----
 
@@ -1199,6 +1199,7 @@
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
 {
+//    RMLog(@"scrollViewWillBeginDragging");
     [self registerMoveEventByUser:YES];
 
     if (self.userTrackingMode != RMUserTrackingModeNone)
@@ -1207,6 +1208,7 @@
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
 {
+//    RMLog(@"scrollViewDidEndDragging");
     if ( ! decelerate)
         [_moveDelegateQueue setSuspended:NO];
 }
@@ -3199,6 +3201,7 @@
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading
 {
+//    RMLog(@"didUpdateHeading()");
     if ( ! _showsUserLocation || _mapScrollView.isDragging || newHeading.headingAccuracy < 0)
         return;	
 
