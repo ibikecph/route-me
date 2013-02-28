@@ -218,8 +218,8 @@
                                   zoomLevel:(float)initialTileSourceZoomLevel
                                maxZoomLevel:(float)initialTileSourceMaxZoomLevel
                                minZoomLevel:(float)initialTileSourceMinZoomLevel
-                            backgroundImage:(UIImage *)backgroundImage
-{
+                            backgroundImage:(UIImage *)backgroundImage {
+    
     _constrainMovement = _enableBouncing = _zoomingInPivotsAroundCenter = NO;
     _enableDragging = YES;
 
@@ -2778,7 +2778,13 @@
         _locationManager.delegate = self;
         lastLocUpdatedTime = 0.0;
         self.cachedLocation = nil;
+        
         [_locationManager startUpdatingLocation];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidEnterBackgroundNotification object:nil];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillEnterForegroundNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(stopLocationService:)  name:UIApplicationDidEnterBackgroundNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(restartLocationService:) name:UIApplicationWillEnterForegroundNotification object:nil];
+        
     }
     else
     {
@@ -2788,6 +2794,10 @@
         [_locationManager release]; _locationManager = nil;
         lastLocUpdatedTime = 0.0;
         self.cachedLocation = nil;
+        
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidEnterBackgroundNotification object:nil];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillEnterForegroundNotification object:nil];
+
 
         if (_delegateHasDidStopLocatingUser)
             [_delegate mapViewDidStopLocatingUser:self];
@@ -3303,4 +3313,22 @@
     }
 }
 
+#pragma mark  - location service
+
+- (void)stopLocationService:(UIApplication *)application {
+    if (_locationManager != nil) {
+        [_locationManager stopUpdatingLocation];
+        [_locationManager stopUpdatingHeading];
+    }
+}
+
+
+- (void)restartLocationService:(UIApplication *)application {
+    if (_userTrackingMode == RMUserTrackingModeFollowWithHeading) {
+        [_locationManager startUpdatingHeading];
+    }
+    if (_showsUserLocation == YES) {
+        [_locationManager startUpdatingLocation];
+    }
+}
 @end
