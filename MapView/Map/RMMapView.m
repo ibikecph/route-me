@@ -3319,8 +3319,8 @@
     if (_locationManager != nil) {
         [_locationManager stopUpdatingLocation];
         [_locationManager stopUpdatingHeading];
-//        [_locationManager release];
-//        _locationManager = nil;
+        [_locationManager release];
+        _locationManager = nil;
     }
 }
 
