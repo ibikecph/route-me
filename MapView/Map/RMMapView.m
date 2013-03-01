@@ -3319,16 +3319,35 @@
     if (_locationManager != nil) {
         [_locationManager stopUpdatingLocation];
         [_locationManager stopUpdatingHeading];
+//        [_locationManager release];
+//        _locationManager = nil;
     }
 }
 
 
 - (void)restartLocationService:(UIApplication *)application {
-    if (_userTrackingMode == RMUserTrackingModeFollowWithHeading) {
-        [_locationManager startUpdatingHeading];
-    }
-    if (_showsUserLocation == YES) {
-        [_locationManager startUpdatingLocation];
+    if (_locationManager) {
+        lastLocUpdatedTime = 0.0;
+        self.cachedLocation = nil;
+        if (_showsUserLocation == YES) {
+            [_locationManager startUpdatingLocation];
+        }        
+        if (_userTrackingMode == RMUserTrackingModeFollowWithHeading) {
+            [_locationManager startUpdatingHeading];
+        }
+    } else {
+        _locationManager = [[CLLocationManager alloc] init];
+        _locationManager.headingFilter = kDefaultHeadingFilter;
+        _locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation;
+        _locationManager.delegate = self;
+        lastLocUpdatedTime = 0.0;
+        self.cachedLocation = nil;
+        if (_showsUserLocation == YES) {
+            [_locationManager startUpdatingLocation];
+        }
+        if (_userTrackingMode == RMUserTrackingModeFollowWithHeading) {
+            [_locationManager startUpdatingHeading];
+        }
     }
 }
 @end
