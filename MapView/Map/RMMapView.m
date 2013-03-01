@@ -3060,7 +3060,7 @@
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation
 {
-    if (!newLocation || !(newLocation = [self smoothLocation:newLocation]))
+    if (!newLocation || !(newLocation = [self smoothLocation:[newLocation copy]]))
         return;
     
     if ( ! _showsUserLocation || _mapScrollView.isDragging || ! newLocation || ! CLLocationCoordinate2DIsValid(newLocation.coordinate))
@@ -3316,38 +3316,38 @@
 #pragma mark  - location service
 
 - (void)stopLocationService:(UIApplication *)application {
-    if (_locationManager != nil) {
-        [_locationManager stopUpdatingLocation];
-        [_locationManager stopUpdatingHeading];
-        [_locationManager release];
-        _locationManager = nil;
-    }
+//    if (_locationManager != nil) {
+//        [_locationManager stopUpdatingLocation];
+//        [_locationManager stopUpdatingHeading];
+//        [_locationManager release];
+//        _locationManager = nil;
+//    }
 }
 
 
 - (void)restartLocationService:(UIApplication *)application {
-    if (_locationManager) {
-        lastLocUpdatedTime = 0.0;
-        self.cachedLocation = nil;
-        if (_showsUserLocation == YES) {
-            [_locationManager startUpdatingLocation];
-        }        
-        if (_userTrackingMode == RMUserTrackingModeFollowWithHeading) {
-            [_locationManager startUpdatingHeading];
-        }
-    } else {
-        _locationManager = [[CLLocationManager alloc] init];
-        _locationManager.headingFilter = kDefaultHeadingFilter;
-        _locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation;
-        _locationManager.delegate = self;
-        lastLocUpdatedTime = 0.0;
-        self.cachedLocation = nil;
-        if (_showsUserLocation == YES) {
-            [_locationManager startUpdatingLocation];
-        }
-        if (_userTrackingMode == RMUserTrackingModeFollowWithHeading) {
-            [_locationManager startUpdatingHeading];
-        }
-    }
+//    if (_locationManager) {
+//        lastLocUpdatedTime = 0.0;
+//        self.cachedLocation = nil;
+//        if (_showsUserLocation == YES) {
+//            [_locationManager startUpdatingLocation];
+//        }        
+//        if (_userTrackingMode == RMUserTrackingModeFollowWithHeading) {
+//            [_locationManager startUpdatingHeading];
+//        }
+//    } else {
+//        _locationManager = [[CLLocationManager alloc] init];
+//        _locationManager.headingFilter = kDefaultHeadingFilter;
+//        _locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation;
+//        _locationManager.delegate = self;
+//        lastLocUpdatedTime = 0.0;
+//        self.cachedLocation = nil;
+//        if (_showsUserLocation == YES) {
+//            [_locationManager startUpdatingLocation];
+//        }
+//        if (_userTrackingMode == RMUserTrackingModeFollowWithHeading) {
+//            [_locationManager startUpdatingHeading];
+//        }
+//    }
 }
 @end
