@@ -3404,11 +3404,11 @@
                          animations:^(void)
                          {
                              CGFloat angle = (M_PI / -180) * newHeading.trueHeading;
-//                             if (self.userLocation.location.course >= 0)
-//                                 angle = (M_PI / -180) * self.userLocation.location.course;
+                             if (self.userLocation.location.course >= 0)
+                                 angle = (M_PI / -180) * self.userLocation.location.course;
 
-                             if (self.correctedCourse >= 0)
-                                 angle = (M_PI / -180) * self.correctedCourse;
+//                             if (self.correctedCourse >= 0)
+//                                 angle = (M_PI / -180) * self.correctedCourse;
 
                              
                              _mapTransform = CGAffineTransformMakeRotation(angle);
