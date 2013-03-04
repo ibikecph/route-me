@@ -493,4 +493,6 @@ typedef enum : NSUInteger {
 
 - (void)correctLocation:(CLLocation*)newLocation;
 
+@property double correctedCourse;
+
 @end

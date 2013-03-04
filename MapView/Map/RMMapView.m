@@ -3335,6 +3335,39 @@
 
     if ( ! [_annotations containsObject:self.userLocation])
         [self addAnnotation:self.userLocation];
+    
+    
+    
+//    
+//    [CATransaction begin];
+//    [CATransaction setAnimationDuration:0.5];
+//    [CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
+//    
+//    [UIView animateWithDuration:0.5
+//                          delay:0.0
+//                        options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationCurveEaseInOut
+//                     animations:^(void)
+//     {
+//         
+//         CGFloat angle = (M_PI / -180) * self.correctedCourse;
+//         
+//         
+//         _mapTransform = CGAffineTransformMakeRotation(angle);
+//         _annotationTransform = CATransform3DMakeAffineTransform(CGAffineTransformMakeRotation(-angle));
+//         
+//         _mapScrollView.transform = _mapTransform;
+//         _overlayView.transform   = _mapTransform;
+//         
+//         for (RMAnnotation *annotation in _annotations)
+//             if ([annotation.layer isKindOfClass:[RMMarker class]] && ! annotation.isUserLocationAnnotation)
+//                 annotation.layer.transform = _annotationTransform;
+//         
+//         [self correctPositionOfAllAnnotations];
+//     }
+//                     completion:nil];
+//    
+//    [CATransaction commit];
+    
 }
 
 - (BOOL)locationManagerShouldDisplayHeadingCalibration:(CLLocationManager *)manager
@@ -3371,9 +3404,13 @@
                          animations:^(void)
                          {
                              CGFloat angle = (M_PI / -180) * newHeading.trueHeading;
-                             if (self.userLocation.location.course >= 0)
-                                 angle = (M_PI / -180) * self.userLocation.location.course;
+//                             if (self.userLocation.location.course >= 0)
+//                                 angle = (M_PI / -180) * self.userLocation.location.course;
 
+                             if (self.correctedCourse >= 0)
+                                 angle = (M_PI / -180) * self.correctedCourse;
+
+                             
                              _mapTransform = CGAffineTransformMakeRotation(angle);
                              _annotationTransform = CATransform3DMakeAffineTransform(CGAffineTransformMakeRotation(-angle));
 
