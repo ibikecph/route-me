@@ -3346,7 +3346,7 @@
     /**
      * correct map heading based on actual data
      */
-    if (self.routingDelegate && [self.delegate respondsToSelector:@selector(getCorrectedPosition)]) {
+    if (self.routingDelegate && [self.delegate respondsToSelector:@selector(getCorrectedPosition)] && self.userTrackingMode == RMUserTrackingModeFollowWithHeading) {
         
         [CATransaction begin];
         [CATransaction setAnimationDuration:0.5];
@@ -3425,10 +3425,6 @@
                              if (self.userLocation.location.course >= 0)
                                  angle = (M_PI / -180) * self.userLocation.location.course;
 
-//                             if (self.correctedCourse >= 0)
-//                                 angle = (M_PI / -180) * self.correctedCourse;
-
-                             
                              _mapTransform = CGAffineTransformMakeRotation(angle);
                              _annotationTransform = CATransform3DMakeAffineTransform(CGAffineTransformMakeRotation(-angle));
 
