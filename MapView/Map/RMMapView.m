@@ -3342,6 +3342,10 @@
     if ( ! [_annotations containsObject:self.userLocation])
         [self addAnnotation:self.userLocation];
     
+    
+    /**
+     * correct map heading based on actual data
+     */
     if (self.routingDelegate && [self.delegate respondsToSelector:@selector(getCorrectedPosition)]) {
         
         [CATransaction begin];
@@ -3353,8 +3357,6 @@
                             options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationCurveEaseInOut
                          animations:^(void)
          {
-             
-//             double angle = [self.routingDelegate getCorrectedHeading];
              
              CGFloat angle = (M_PI / -180) * [self.routingDelegate getCorrectedHeading];
              
