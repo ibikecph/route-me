@@ -53,6 +53,12 @@
 @class RMQuadTree;
 @class RMUserLocation;
 
+
+@protocol RouteDelegate <NSObject>
+- (CLLocation*)getCorrectedPosition;
+- (double)getCorrectedHeading;
+@end
+
 // constants for boundingMask
 enum : NSUInteger {
     RMMapNoMinBound		= 0, // Map can be zoomed out past view limits
@@ -493,6 +499,6 @@ typedef enum : NSUInteger {
 
 - (void)correctLocation:(CLLocation*)newLocation;
 
-@property double correctedCourse;
+@property (nonatomic, assign) id<RouteDelegate> routingDelegate;;
 
 @end

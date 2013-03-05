@@ -3203,8 +3203,14 @@
     {
         self.userLocation.location = newLocation;
 
-        if (_delegateHasDidUpdateUserLocation)
+        if (_delegateHasDidUpdateUserLocation) {
             [_delegate mapView:self didUpdateUserLocation:self.userLocation];
+        }
+    }
+    
+    
+    if (self.routingDelegate && [self.delegate respondsToSelector:@selector(getCorrectedPosition)]) {
+        newLocation = [self.routingDelegate getCorrectedPosition];
     }
 
     if (self.userTrackingMode != RMUserTrackingModeNone)
@@ -3336,37 +3342,41 @@
     if ( ! [_annotations containsObject:self.userLocation])
         [self addAnnotation:self.userLocation];
     
+    if (self.routingDelegate && [self.delegate respondsToSelector:@selector(getCorrectedPosition)]) {
+        
+        [CATransaction begin];
+        [CATransaction setAnimationDuration:0.5];
+        [CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
+        
+        [UIView animateWithDuration:0.5
+                              delay:0.0
+                            options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationCurveEaseInOut
+                         animations:^(void)
+         {
+             
+//             double angle = [self.routingDelegate getCorrectedHeading];
+             
+             CGFloat angle = (M_PI / -180) * [self.routingDelegate getCorrectedHeading];
+             
+             
+             _mapTransform = CGAffineTransformMakeRotation(angle);
+             _annotationTransform = CATransform3DMakeAffineTransform(CGAffineTransformMakeRotation(-angle));
+             
+             _mapScrollView.transform = _mapTransform;
+             _overlayView.transform   = _mapTransform;
+             
+             for (RMAnnotation *annotation in _annotations)
+                 if ([annotation.layer isKindOfClass:[RMMarker class]] && ! annotation.isUserLocationAnnotation)
+                     annotation.layer.transform = _annotationTransform;
+             
+             [self correctPositionOfAllAnnotations];
+         }
+                         completion:nil];
+        
+        [CATransaction commit];
+    }
+
     
-    
-//    
-//    [CATransaction begin];
-//    [CATransaction setAnimationDuration:0.5];
-//    [CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
-//    
-//    [UIView animateWithDuration:0.5
-//                          delay:0.0
-//                        options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationCurveEaseInOut
-//                     animations:^(void)
-//     {
-//         
-//         CGFloat angle = (M_PI / -180) * self.correctedCourse;
-//         
-//         
-//         _mapTransform = CGAffineTransformMakeRotation(angle);
-//         _annotationTransform = CATransform3DMakeAffineTransform(CGAffineTransformMakeRotation(-angle));
-//         
-//         _mapScrollView.transform = _mapTransform;
-//         _overlayView.transform   = _mapTransform;
-//         
-//         for (RMAnnotation *annotation in _annotations)
-//             if ([annotation.layer isKindOfClass:[RMMarker class]] && ! annotation.isUserLocationAnnotation)
-//                 annotation.layer.transform = _annotationTransform;
-//         
-//         [self correctPositionOfAllAnnotations];
-//     }
-//                     completion:nil];
-//    
-//    [CATransaction commit];
     
 }
 
@@ -3378,12 +3388,18 @@
     return self.displayHeadingCalibration;
 }
 
-- (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading
-{
-//    RMLog(@"didUpdateHeading()");
+- (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
+    
     if ( ! _showsUserLocation || _mapScrollView.isDragging || newHeading.headingAccuracy < 0)
         return;	
 
+    /**
+     * handle the case where we might be routing and only want to use the corrected position
+     */
+    if (self.routingDelegate && [self.routingDelegate respondsToSelector:@selector(getCorrectedHeading)]) {
+        return;
+    }
+    
     self.userLocation.heading = newHeading;
 
     if (_delegateHasDidUpdateUserLocation && _triggerUpdateOnHeadingChange)
