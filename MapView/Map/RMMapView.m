@@ -3346,7 +3346,11 @@
     /**
      * correct map heading based on actual data
      */
-    if (self.routingDelegate && [self.delegate respondsToSelector:@selector(getCorrectedPosition)] && self.userTrackingMode == RMUserTrackingModeFollowWithHeading) {
+    if (self.routingDelegate && [self.delegate respondsToSelector:@selector(getCorrectedPosition)] && self.userTrackingMode == RMUserTrackingModeFollowWithHeading && self.userLocation.location.speed > 0.2f) {
+        
+//        if (_userHeadingTrackingView.alpha < 1.0) {
+//            [UIView animateWithDuration:0.5 animations:^(void) { _userHeadingTrackingView.alpha = 1.0; }];
+//        }
         
         [CATransaction begin];
         [CATransaction setAnimationDuration:0.5];
@@ -3360,8 +3364,12 @@
              
              CGFloat angle = (M_PI / -180) * [self.routingDelegate getCorrectedHeading];
              
+
+             
              
              _mapTransform = CGAffineTransformMakeRotation(angle);
+//             _userHeadingTrackingView.transform = CGAffineTransformMakeRotation((M_PI / -180) * (self.userLocation.heading.trueHeading - [self.routingDelegate getCorrectedHeading]));
+             
              _annotationTransform = CATransform3DMakeAffineTransform(CGAffineTransformMakeRotation(-angle));
              
              _mapScrollView.transform = _mapTransform;
@@ -3398,7 +3406,8 @@
     /**
      * handle the case where we might be routing and only want to use the corrected position
      */
-    if (self.routingDelegate && [self.routingDelegate respondsToSelector:@selector(getCorrectedHeading)]) {
+    if (self.routingDelegate && [self.routingDelegate respondsToSelector:@selector(getCorrectedHeading)] && self.userLocation.location.speed > 0.2) {
+        _userHeadingTrackingView.alpha = 0.0f;
         return;
     }
     
@@ -3407,10 +3416,15 @@
     if (_delegateHasDidUpdateUserLocation && _triggerUpdateOnHeadingChange)
         [_delegate mapView:self didUpdateUserLocation:self.userLocation];
 
-    if (self.userLocation.location.speed > 0.5 && newHeading.trueHeading != 0 && self.userTrackingMode == RMUserTrackingModeFollowWithHeading)
+    /**
+     * If we're not moving just use compass for heading.
+     * That would allow the user to orient himself
+     */
+    if (self.userLocation.location.speed <= 0.2 && newHeading.trueHeading != 0 && self.userTrackingMode == RMUserTrackingModeFollowWithHeading)
     {
-        if (_userHeadingTrackingView.alpha < 1.0)
+        if (_userHeadingTrackingView.alpha < 1.0) {
             [UIView animateWithDuration:0.5 animations:^(void) { _userHeadingTrackingView.alpha = 1.0; }];
+        }
 
         [CATransaction begin];
         [CATransaction setAnimationDuration:0.5];
@@ -3422,8 +3436,6 @@
                          animations:^(void)
                          {
                              CGFloat angle = (M_PI / -180) * newHeading.trueHeading;
-                             if (self.userLocation.location.course >= 0)
-                                 angle = (M_PI / -180) * self.userLocation.location.course;
 
                              _mapTransform = CGAffineTransformMakeRotation(angle);
                              _annotationTransform = CATransform3DMakeAffineTransform(CGAffineTransformMakeRotation(-angle));
