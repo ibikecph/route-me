@@ -3346,7 +3346,7 @@
     /**
      * correct map heading based on actual data
      */
-    if (self.routingDelegate && [self.delegate respondsToSelector:@selector(getCorrectedPosition)] && self.userTrackingMode == RMUserTrackingModeFollowWithHeading && self.userLocation.location.speed > 0.2f) {
+    if (self.routingDelegate && [self.delegate respondsToSelector:@selector(getCorrectedPosition)] && self.userTrackingMode == RMUserTrackingModeFollowWithHeading && (self.userLocation.location.speed >= 0.2f || self.userLocation.location.speed < 0)) {
         
 //        if (_userHeadingTrackingView.alpha < 1.0) {
 //            [UIView animateWithDuration:0.5 animations:^(void) { _userHeadingTrackingView.alpha = 1.0; }];
