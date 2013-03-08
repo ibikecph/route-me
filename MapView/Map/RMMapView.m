@@ -3346,7 +3346,7 @@
     /**
      * correct map heading based on actual data
      */
-    if (self.routingDelegate && [self.delegate respondsToSelector:@selector(getCorrectedPosition)] && self.userTrackingMode == RMUserTrackingModeFollowWithHeading && (self.userLocation.location.speed >= 0.5f || self.userLocation.location.speed < 0)) {
+    if (self.routingDelegate && [self.delegate respondsToSelector:@selector(getCorrectedPosition)] && self.userTrackingMode == RMUserTrackingModeFollowWithHeading /*&& (self.userLocation.location.speed >= 0.5f || self.userLocation.location.speed < 0)*/) {
         
         if (_userHeadingTrackingView.alpha < 1.0) {
             [UIView animateWithDuration:0.5 animations:^(void) { _userHeadingTrackingView.alpha = 1.0; }];
@@ -3369,8 +3369,10 @@
              /**
               * always show the view hat and orient it according to direction user is facing
               */
-             CGFloat viewAngle = (M_PI / -180) * ([self.routingDelegate getCorrectedHeading] - self.userLocation.heading.trueHeading);
+             CGFloat trueHeading = self.userLocation.heading.trueHeading;
+             CGFloat viewAngle = (M_PI / 180) * (trueHeading - [self.routingDelegate getCorrectedHeading]);
 
+             NSLog(@"True heading: %f Corrected heading: %f", trueHeading, [self.routingDelegate getCorrectedHeading]);
              
              
              _mapTransform = CGAffineTransformMakeRotation(angle);
