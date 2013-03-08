@@ -3346,11 +3346,11 @@
     /**
      * correct map heading based on actual data
      */
-    if (self.routingDelegate && [self.delegate respondsToSelector:@selector(getCorrectedPosition)] && self.userTrackingMode == RMUserTrackingModeFollowWithHeading && (self.userLocation.location.speed >= 0.2f || self.userLocation.location.speed < 0)) {
+    if (self.routingDelegate && [self.delegate respondsToSelector:@selector(getCorrectedPosition)] && self.userTrackingMode == RMUserTrackingModeFollowWithHeading && (self.userLocation.location.speed >= 0.5f || self.userLocation.location.speed < 0)) {
         
-//        if (_userHeadingTrackingView.alpha < 1.0) {
-//            [UIView animateWithDuration:0.5 animations:^(void) { _userHeadingTrackingView.alpha = 1.0; }];
-//        }
+        if (_userHeadingTrackingView.alpha < 1.0) {
+            [UIView animateWithDuration:0.5 animations:^(void) { _userHeadingTrackingView.alpha = 1.0; }];
+        }
         
         [CATransaction begin];
         [CATransaction setAnimationDuration:0.5];
@@ -3362,13 +3362,19 @@
                          animations:^(void)
          {
              
+             
+             
              CGFloat angle = (M_PI / -180) * [self.routingDelegate getCorrectedHeading];
              
+             /**
+              * always show the view hat and orient it according to direction user is facing
+              */
+             CGFloat viewAngle = (M_PI / -180) * ([self.routingDelegate getCorrectedHeading] - self.userLocation.heading.trueHeading);
 
              
              
              _mapTransform = CGAffineTransformMakeRotation(angle);
-//             _userHeadingTrackingView.transform = CGAffineTransformMakeRotation((M_PI / -180) * (self.userLocation.heading.trueHeading - [self.routingDelegate getCorrectedHeading]));
+             _userHeadingTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
              
              _annotationTransform = CATransform3DMakeAffineTransform(CGAffineTransformMakeRotation(-angle));
              
