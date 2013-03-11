@@ -209,6 +209,8 @@
 @synthesize rotateOnHeadingChange = _rotateOnHeadingChange;
 @synthesize cachedLocation = _cachedLocation;
 
+@synthesize routingDelegate;
+
 
 #pragma mark -
 #pragma mark Initialization
@@ -3196,9 +3198,6 @@
 
     CLLocation * loc = [[CLLocation alloc] initWithCoordinate:newLocation.coordinate altitude:newLocation.altitude horizontalAccuracy:newLocation.horizontalAccuracy verticalAccuracy:newLocation.verticalAccuracy course:newLocation.course speed:newLocation.speed timestamp:newLocation.timestamp];
     
-//    if (self.routingDelegate && [self.delegate respondsToSelector:@selector(getCorrectedPosition)]) {
-//        loc = [self.routingDelegate getCorrectedPosition];
-//    }
     
     if (loc == nil || !(newLocation = [self smoothLocation:loc]))
         return;
@@ -3214,10 +3213,13 @@
         if (_delegateHasDidUpdateUserLocation) {
             [_delegate mapView:self didUpdateUserLocation:self.userLocation];
         }
+        
+        if (self.routingDelegate && [self.routingDelegate respondsToSelector:@selector(getCorrectedPosition)]) {
+            loc = [self.routingDelegate getCorrectedPosition];
+        }
+
     }
 
-    
-    
     
     if (self.userTrackingMode != RMUserTrackingModeNone)
     {
@@ -3352,7 +3354,7 @@
     /**
      * correct map heading based on actual data
      */
-    if (self.routingDelegate && [self.delegate respondsToSelector:@selector(getCorrectedPosition)] && self.userTrackingMode == RMUserTrackingModeFollowWithHeading /*&& (self.userLocation.location.speed >= 0.5f || self.userLocation.location.speed < 0)*/) {
+    if (self.routingDelegate && [self.routingDelegate respondsToSelector:@selector(getCorrectedPosition)] && self.userTrackingMode == RMUserTrackingModeFollowWithHeading /*&& (self.userLocation.location.speed >= 0.5f || self.userLocation.location.speed < 0)*/) {
         
         if (_userHeadingTrackingView.alpha < 1.0) {
             [UIView animateWithDuration:0.5 animations:^(void) { _userHeadingTrackingView.alpha = 1.0; }];

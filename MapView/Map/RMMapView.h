@@ -499,6 +499,6 @@ typedef enum : NSUInteger {
 
 - (void)correctLocation:(CLLocation*)newLocation;
 
-@property (nonatomic, assign) id<RouteDelegate> routingDelegate;;
+@property (nonatomic, assign) id<RouteDelegate> routingDelegate;
 
 @end
