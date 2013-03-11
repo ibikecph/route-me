@@ -3016,43 +3016,44 @@
 
 // Filter best locations
 // Returns nil if location should not be processed further
-- (CLLocation *)smoothLocation:(CLLocation *)loc {
-    if (!loc)
-        return nil;
-
+- (CLLocation *)smoothLocation:(CLLocation *)newLocation {
+    
+//    CLLocation * newLoc = [[CLLocation alloc] initWithCoordinate:newLocation.coordinate altitude:newLocation.altitude horizontalAccuracy:newLocation.horizontalAccuracy verticalAccuracy:newLocation.verticalAccuracy course:newLocation.course speed:newLocation.speed timestamp:newLocation.timestamp];
+//    
+    
     if (lastLocUpdatedTime == 0.0)
         lastLocUpdatedTime = CACurrentMediaTime();
 
-    if ((int)loc.coordinate.latitude == 0 && (int)loc.coordinate.longitude == 0) {
+    if (newLocation.coordinate.latitude == 0 && newLocation.coordinate.longitude == 0) {
         RMLog(@"Skipping location 0.0, 0.0! (You cannot walk on the water)");
         return nil;
     }
 
-    if (loc.horizontalAccuracy > ACCURACY_JUNK) {
-        RMLog(@"Low accuracy! Skipping location %f %f %.1f!", loc.coordinate.latitude, loc.coordinate.longitude, loc.horizontalAccuracy);
+    if (newLocation.horizontalAccuracy > ACCURACY_JUNK) {
+        RMLog(@"Low accuracy! Skipping location %f %f %.1f!", newLocation.coordinate.latitude, newLocation.coordinate.longitude, newLocation.horizontalAccuracy);
         return nil;
     }
 
     // check if we should use/cache this location:
-    if (loc.horizontalAccuracy < 0) {
+    if (newLocation.horizontalAccuracy < 0) {
         // update with this location but don't cache it
         RMLog(@"No accuracy!");
         self.cachedLocation = nil;
         lastLocUpdatedTime = CACurrentMediaTime();
-        return loc;
+        return newLocation;
     }
     else {
-        if (self.cachedLocation == nil || loc.horizontalAccuracy < self.cachedLocation.horizontalAccuracy) {
-            self.cachedLocation = loc;
+        if (self.cachedLocation == nil || newLocation.horizontalAccuracy < self.cachedLocation.horizontalAccuracy) {
+            self.cachedLocation = newLocation;
             // caching location:
 //			RMLog(@"Caching location: %f %f accuracy: %.1f", loc.coordinate.latitude, loc.coordinate.longitude, loc.horizontalAccuracy);
         }
         if ((CACurrentMediaTime() - lastLocUpdatedTime) > CACHE_UPDATE_INTERVAL || (int)self.cachedLocation.horizontalAccuracy < ACCURACY_GREAT) {
 //            RMLog(@"Updating with cached location");
             lastLocUpdatedTime = CACurrentMediaTime();
-            loc = self.cachedLocation;
+            newLocation = self.cachedLocation;
             self.cachedLocation = nil; // invalidate used location
-            return loc;
+            return newLocation;
         }
     }
     return nil;
@@ -3193,18 +3194,22 @@
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation {
 
+    CLLocation * loc = [[CLLocation alloc] initWithCoordinate:newLocation.coordinate altitude:newLocation.altitude horizontalAccuracy:newLocation.horizontalAccuracy verticalAccuracy:newLocation.verticalAccuracy course:newLocation.course speed:newLocation.speed timestamp:newLocation.timestamp];
+    
 //    if (self.routingDelegate && [self.delegate respondsToSelector:@selector(getCorrectedPosition)]) {
-//        newLocation = [self.routingDelegate getCorrectedPosition];
+//        loc = [self.routingDelegate getCorrectedPosition];
 //    }
     
-    if (!newLocation || !(newLocation = [self smoothLocation:[newLocation copy]]))
+    if (loc == nil || !(newLocation = [self smoothLocation:loc]))
+        return;
+
+    NSLog(@"%@", loc);
+    
+    if ( ! _showsUserLocation || _mapScrollView.isDragging || ! loc || ! CLLocationCoordinate2DIsValid(loc.coordinate))
         return;
     
-    if ( ! _showsUserLocation || _mapScrollView.isDragging || ! newLocation || ! CLLocationCoordinate2DIsValid(newLocation.coordinate))
-        return;
-    
-    if ([newLocation distanceFromLocation:oldLocation]) {
-        self.userLocation.location = newLocation;
+    if ([loc distanceFromLocation:oldLocation]) {
+        self.userLocation.location = loc;
         
         if (_delegateHasDidUpdateUserLocation) {
             [_delegate mapView:self didUpdateUserLocation:self.userLocation];
@@ -3275,15 +3280,15 @@
         [self addAnnotation:_accuracyCircleAnnotation];
     }
 
-    if ([newLocation distanceFromLocation:oldLocation])
+    if ([loc distanceFromLocation:oldLocation])
         _accuracyCircleAnnotation.coordinate = newLocation.coordinate;
 
-    if (newLocation.horizontalAccuracy != oldLocation.horizontalAccuracy)
-        ((RMCircle *)_accuracyCircleAnnotation.layer).radiusInMeters = newLocation.horizontalAccuracy;
+    if (loc.horizontalAccuracy != oldLocation.horizontalAccuracy)
+        ((RMCircle *)_accuracyCircleAnnotation.layer).radiusInMeters = loc.horizontalAccuracy;
 
     if ( ! _trackingHaloAnnotation)
     {
-        _trackingHaloAnnotation = [[RMAnnotation annotationWithMapView:self coordinate:newLocation.coordinate andTitle:nil] retain];
+        _trackingHaloAnnotation = [[RMAnnotation annotationWithMapView:self coordinate:loc.coordinate andTitle:nil] retain];
         _trackingHaloAnnotation.annotationType = kRMTrackingHaloAnnotationTypeName;
         _trackingHaloAnnotation.clusteringEnabled = NO;
         _trackingHaloAnnotation.enabled = NO;
@@ -3325,8 +3330,8 @@
         [self addAnnotation:_trackingHaloAnnotation];
     }
 
-    if ([newLocation distanceFromLocation:oldLocation])
-        _trackingHaloAnnotation.coordinate = newLocation.coordinate;
+    if ([loc distanceFromLocation:oldLocation])
+        _trackingHaloAnnotation.coordinate = loc.coordinate;
 
     self.userLocation.layer.hidden = ( ! CLLocationCoordinate2DIsValid(self.userLocation.coordinate) || self.userTrackingMode == RMUserTrackingModeFollowWithHeading);
 
@@ -3366,18 +3371,18 @@
              
              
              CGFloat angle = (M_PI / -180) * [self.routingDelegate getCorrectedHeading];
-//
-//             /**
-//              * always show the view hat and orient it according to direction user is facing
-//              */
-//             CGFloat trueHeading = self.userLocation.heading.trueHeading;
-//             CGFloat viewAngle = (M_PI / 180) * (trueHeading - [self.routingDelegate getCorrectedHeading]);
-//
-//             NSLog(@"True heading: %f Corrected heading: %f", trueHeading, [self.routingDelegate getCorrectedHeading]);
+
+             /**
+              * always show the view hat and orient it according to direction user is facing
+              */
+             CGFloat trueHeading = self.userLocation.heading.trueHeading;
+             CGFloat viewAngle = (M_PI / 180) * (trueHeading - [self.routingDelegate getCorrectedHeading]);
+
+             NSLog(@"True heading: %f Corrected heading: %f", trueHeading, [self.routingDelegate getCorrectedHeading]);
              
              
              _mapTransform = CGAffineTransformMakeRotation(angle);
-//             _userHeadingTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
+             _userHeadingTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
              
              _annotationTransform = CATransform3DMakeAffineTransform(CGAffineTransformMakeRotation(-angle));
              
