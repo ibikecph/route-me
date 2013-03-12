@@ -50,6 +50,7 @@
 		25757F501291C8640083D504 /* RMCircle.m in Sources */ = {isa = PBXBuildFile; fileRef = 25757F4E1291C8640083D504 /* RMCircle.m */; };
 		4BA5296A16D52810000CA4A2 /* SMiBikeCPHMapTileSource.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BA5296816D52810000CA4A2 /* SMiBikeCPHMapTileSource.h */; };
 		4BA5296B16D52810000CA4A2 /* SMiBikeCPHMapTileSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BA5296916D52810000CA4A2 /* SMiBikeCPHMapTileSource.m */; };
+		4C44BE4416EFD0A600CEA59B /* libMapView.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 17F31EFA1331050A00122B16 /* libMapView.a */; };
 		96492C400FA8AD3400EBA6D2 /* RMGlobalConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = 96492C3F0FA8AD3400EBA6D2 /* RMGlobalConstants.h */; };
 		B1EB26C610B5D8E6009F8658 /* RMNotifications.h in Headers */ = {isa = PBXBuildFile; fileRef = B1EB26C510B5D8E6009F8658 /* RMNotifications.h */; };
 		B8474BA40EB40094006A0BC1 /* RMDatabaseCache.h in Headers */ = {isa = PBXBuildFile; fileRef = B8474B980EB40094006A0BC1 /* RMDatabaseCache.h */; };
@@ -253,6 +254,7 @@
 				B8C974540E8A19B2007D16AD /* QuartzCore.framework in Frameworks */,
 				B8474BC10EB4019A006A0BC1 /* libsqlite3.dylib in Frameworks */,
 				160307B316835B2C008F8AC2 /* libProj4.a in Frameworks */,
+				4C44BE4416EFD0A600CEA59B /* libMapView.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -3192,9 +3192,9 @@
             [_delegate mapView:self didUpdateUserLocation:self.userLocation];
         }
         
-        if (self.routingDelegate && [self.routingDelegate respondsToSelector:@selector(getCorrectedPosition)]) {
-            self.userLocation.location = [self.routingDelegate getCorrectedPosition];
-        }        
+//        if (self.routingDelegate && [self.routingDelegate respondsToSelector:@selector(getCorrectedPosition)]) {
+//            self.userLocation.location = [self.routingDelegate getCorrectedPosition];
+//        }        
     }
 
     
