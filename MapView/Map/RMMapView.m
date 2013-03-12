@@ -3185,6 +3185,7 @@
         return;
     
     if ([loc distanceFromLocation:oldLocation]) {
+        
         self.userLocation.location = loc;
         
         if (_delegateHasDidUpdateUserLocation) {
@@ -3192,9 +3193,8 @@
         }
         
         if (self.routingDelegate && [self.routingDelegate respondsToSelector:@selector(getCorrectedPosition)]) {
-            loc = [self.routingDelegate getCorrectedPosition];
-        }
-
+            self.userLocation.location = [self.routingDelegate getCorrectedPosition];
+        }        
     }
 
     
@@ -3333,22 +3333,7 @@
      */
     if (self.routingDelegate && [self.routingDelegate respondsToSelector:@selector(getCorrectedPosition)] && self.userTrackingMode == RMUserTrackingModeFollowWithHeading) {
         
-        /**
-         * after moving halo and POV hat sometimes escape
-         * this should re-center them
-         */
-        _userHaloTrackingView.center = CGPointMake(round([self bounds].size.width  / 2),
-                                                   round([self bounds].size.height / 2));
-        _userHeadingTrackingView.frame = CGRectMake((self.bounds.size.width  / 2) - (_userHeadingTrackingView.bounds.size.width / 2),
-                                                    (self.bounds.size.height / 2) - _userHeadingTrackingView.bounds.size.height,
-                                                    _userHeadingTrackingView.bounds.size.width,
-                                                    _userHeadingTrackingView.bounds.size.height * 2);
-        _userLocationTrackingView.center = CGPointMake(round([self bounds].size.width  / 2),
-                                                       round([self bounds].size.height / 2));
-        
-        
-        
-        
+            
         if (_userHeadingTrackingView.alpha < 1.0) {
             [UIView animateWithDuration:0.5 animations:^(void) { _userHeadingTrackingView.alpha = 1.0; }];
         }
