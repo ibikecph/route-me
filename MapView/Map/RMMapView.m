@@ -2871,29 +2871,6 @@
         {
             [_locationManager stopUpdatingHeading];
 
-            // Spoiled Milk update: we don't want map to reset rotation when user starts scrolling the map.
-//            [CATransaction setAnimationDuration:0.5];
-//            [CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
-//
-//            [UIView animateWithDuration:(animated ? 0.5 : 0.0)
-//                                  delay:0.0
-//                                options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationCurveEaseInOut
-//                             animations:^(void)
-//                             {
-//                                 _mapTransform = CGAffineTransformIdentity;
-//                                 _annotationTransform = CATransform3DIdentity;
-//
-//                                 _mapScrollView.transform = _mapTransform;
-//                                 _overlayView.transform   = _mapTransform;
-//
-//                                 for (RMAnnotation *annotation in _annotations)
-//                                     if ([annotation.layer isKindOfClass:[RMMarker class]] && ! annotation.isUserLocationAnnotation)
-//                                         annotation.layer.transform = _annotationTransform;
-//                             }
-//                             completion:nil];
-//
-//            [CATransaction commit];
-
             if (_userLocationTrackingView || _userHeadingTrackingView || _userHaloTrackingView)
             {
                 [_userLocationTrackingView removeFromSuperview]; _userLocationTrackingView = nil;
@@ -3354,7 +3331,23 @@
     /**
      * correct map heading based on actual data
      */
-    if (self.routingDelegate && [self.routingDelegate respondsToSelector:@selector(getCorrectedPosition)] && self.userTrackingMode == RMUserTrackingModeFollowWithHeading /*&& (self.userLocation.location.speed >= 0.5f || self.userLocation.location.speed < 0)*/) {
+    if (self.routingDelegate && [self.routingDelegate respondsToSelector:@selector(getCorrectedPosition)] && self.userTrackingMode == RMUserTrackingModeFollowWithHeading) {
+        
+        /**
+         * after moving halo and POV hat sometimes escape
+         * this should re-center them
+         */
+        _userHaloTrackingView.center = CGPointMake(round([self bounds].size.width  / 2),
+                                                   round([self bounds].size.height / 2));
+        _userHeadingTrackingView.frame = CGRectMake((self.bounds.size.width  / 2) - (_userHeadingTrackingView.bounds.size.width / 2),
+                                                    (self.bounds.size.height / 2) - _userHeadingTrackingView.bounds.size.height,
+                                                    _userHeadingTrackingView.bounds.size.width,
+                                                    _userHeadingTrackingView.bounds.size.height * 2);
+        _userLocationTrackingView.center = CGPointMake(round([self bounds].size.width  / 2),
+                                                       round([self bounds].size.height / 2));
+        
+        
+        
         
         if (_userHeadingTrackingView.alpha < 1.0) {
             [UIView animateWithDuration:0.5 animations:^(void) { _userHeadingTrackingView.alpha = 1.0; }];
@@ -3419,24 +3412,12 @@
     if ( ! _showsUserLocation || _mapScrollView.isDragging || newHeading.headingAccuracy < 0)
         return;	
 
-//    /**
-//     * handle the case where we might be routing and only want to use the corrected position
-//     */
-//    if (self.routingDelegate && [self.routingDelegate respondsToSelector:@selector(getCorrectedHeading)]/* && self.userLocation.location.speed > 0.2*/) {
-//        _userHeadingTrackingView.alpha = 0.0f;
-//        return;
-//    }
-    
     self.userLocation.heading = newHeading;
 
     if (_delegateHasDidUpdateUserLocation && _triggerUpdateOnHeadingChange)
         [_delegate mapView:self didUpdateUserLocation:self.userLocation];
 
-    /**
-     * If we're not moving just use compass for heading.
-     * That would allow the user to orient himself
-     */
-    if (/*self.userLocation.location.speed <= 0.2 && */newHeading.trueHeading != 0 && self.userTrackingMode == RMUserTrackingModeFollowWithHeading)
+    if (newHeading.trueHeading != 0 && self.userTrackingMode == RMUserTrackingModeFollowWithHeading)
     {
         if (_userHeadingTrackingView.alpha < 1.0) {
             [UIView animateWithDuration:0.5 animations:^(void) { _userHeadingTrackingView.alpha = 1.0; }];
