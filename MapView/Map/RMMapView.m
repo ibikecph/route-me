@@ -3338,16 +3338,16 @@
             [UIView animateWithDuration:0.5 animations:^(void) { _userHeadingTrackingView.alpha = 1.0; }];
         }
         
-        [CATransaction begin];
-        [CATransaction setAnimationDuration:0.5];
-        [CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
+//        [CATransaction begin];
+//        [CATransaction setAnimationDuration:0.5];
+//        [CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
+//        
+//        [UIView animateWithDuration:0.5
+//                              delay:0.0
+//                            options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationCurveEaseInOut
+//                         animations:^(void)
+//         {
         
-        [UIView animateWithDuration:0.5
-                              delay:0.0
-                            options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationCurveEaseInOut
-                         animations:^(void)
-         {
-             
              
              
              CGFloat angle = (M_PI / -180) * [self.routingDelegate getCorrectedHeading];
@@ -3374,10 +3374,10 @@
                      annotation.layer.transform = _annotationTransform;
              
              [self correctPositionOfAllAnnotations];
-         }
-                         completion:nil];
-        
-        [CATransaction commit];
+//         }
+//                         completion:nil];
+//        
+//        [CATransaction commit];
     }
 
     
@@ -3408,15 +3408,15 @@
             [UIView animateWithDuration:0.5 animations:^(void) { _userHeadingTrackingView.alpha = 1.0; }];
         }
 
-        [CATransaction begin];
-        [CATransaction setAnimationDuration:0.5];
-        [CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
-
-        [UIView animateWithDuration:0.5
-                              delay:0.0
-                            options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationCurveEaseInOut
-                         animations:^(void)
-                         {
+//        [CATransaction begin];
+//        [CATransaction setAnimationDuration:0.5];
+//        [CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
+//
+//        [UIView animateWithDuration:0.5
+//                              delay:0.0
+//                            options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationCurveEaseInOut
+//                         animations:^(void)
+//                         {
 
                              if (self.routingDelegate && [self.routingDelegate respondsToSelector:@selector(getCorrectedHeading)]) {
                                  CGFloat trueHeading = self.userLocation.heading.trueHeading;
@@ -3439,10 +3439,10 @@
                              }
                              
                              
-                         }
-                         completion:nil];
-
-        [CATransaction commit];
+//                         }
+//                         completion:nil];
+//
+//        [CATransaction commit];
     }
 }
 
