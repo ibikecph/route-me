@@ -52,6 +52,8 @@
 @synthesize quadTreeNode;
 @synthesize isUserLocationAnnotation;
 
+@synthesize neCoordinate, swCoordinate;
+
 + (id)annotationWithMapView:(RMMapView *)aMapView coordinate:(CLLocationCoordinate2D)aCoordinate andTitle:(NSString *)aTitle
 {
     return [[[self alloc] initWithMapView:aMapView coordinate:aCoordinate andTitle:aTitle] autorelease];
@@ -192,6 +194,12 @@
     RMProjectedPoint first = [[mapView projection] coordinateToProjectedPoint:southWest];
     RMProjectedPoint second = [[mapView projection] coordinateToProjectedPoint:northEast];
     self.projectedBoundingBox = RMProjectedRectMake(first.x, first.y, second.x - first.x, second.y - first.y);
+    CLLocation * loc = [[CLLocation alloc] initWithLatitude:southWest.latitude longitude:southWest.longitude];
+    [self setSwCoordinate:loc];
+    [loc release];
+    loc = [[CLLocation alloc] initWithLatitude:northEast.latitude longitude:northEast.longitude];
+    [self setNeCoordinate:loc];
+    [loc release];
     self.hasBoundingBox = YES;
 }
 

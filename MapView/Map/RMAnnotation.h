@@ -144,4 +144,11 @@
 // Used internally
 @property (nonatomic, retain) RMMapView *mapView;
 
+/*
+ * bounding box coordinates
+ */
+
+@property (nonatomic, retain) CLLocation * neCoordinate;
+@property (nonatomic, retain) CLLocation * swCoordinate;
+
 @end
