@@ -3200,6 +3200,67 @@
     
     if (self.userTrackingMode != RMUserTrackingModeNone)
     {
+        
+        
+        /**
+         * correct map heading based on actual data
+         * we do this first to try to fix the escaping POV hat problem
+         */
+        if (self.routingDelegate && [self.routingDelegate respondsToSelector:@selector(getCorrectedPosition)] && self.userTrackingMode == RMUserTrackingModeFollowWithHeading) {
+            
+            
+            if (_userHeadingTrackingView.alpha < 1.0) {
+                [UIView animateWithDuration:0.5 animations:^(void) { _userHeadingTrackingView.alpha = 1.0; }];
+            }
+            
+            [CATransaction begin];
+            [CATransaction setAnimationDuration:0.5];
+            [CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
+            
+            [UIView animateWithDuration:0.5
+                                  delay:0.0
+                                options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationCurveEaseInOut
+                             animations:^(void)
+             {
+                 
+                 
+                 
+                 CGFloat angle = (M_PI / -180) * [self.routingDelegate getCorrectedHeading];
+                 
+                 /**
+                  * always show the view hat and orient it according to direction user is facing
+                  */
+                 CGFloat trueHeading = self.userLocation.heading.trueHeading;
+                 CGFloat viewAngle = (M_PI / 180) * (trueHeading - [self.routingDelegate getCorrectedHeading]);
+                 
+                 NSLog(@"True heading: %f Corrected heading: %f", trueHeading, [self.routingDelegate getCorrectedHeading]);
+                 
+                 
+                 _mapTransform = CGAffineTransformMakeRotation(angle);
+                 _userHeadingTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
+                 
+                 _annotationTransform = CATransform3DMakeAffineTransform(CGAffineTransformMakeRotation(-angle));
+                 
+                 _mapScrollView.transform = _mapTransform;
+                 _overlayView.transform   = _mapTransform;
+                 
+                 for (RMAnnotation *annotation in _annotations)
+                     if ([annotation.layer isKindOfClass:[RMMarker class]] && ! annotation.isUserLocationAnnotation)
+                         annotation.layer.transform = _annotationTransform;
+                 
+                 [self correctPositionOfAllAnnotations];
+             }
+                             completion:nil];
+            
+            [CATransaction commit];
+        }
+
+        
+        
+        
+        
+        
+        
         // center on user location unless we're already centered there (or very close)
         //
         CGPoint mapCenterPoint    = [self convertPoint:self.center fromView:self.superview];
@@ -3326,60 +3387,6 @@
 
     if ( ! [_annotations containsObject:self.userLocation])
         [self addAnnotation:self.userLocation];
-    
-    
-    /**
-     * correct map heading based on actual data
-     */
-    if (self.routingDelegate && [self.routingDelegate respondsToSelector:@selector(getCorrectedPosition)] && self.userTrackingMode == RMUserTrackingModeFollowWithHeading) {
-        
-            
-        if (_userHeadingTrackingView.alpha < 1.0) {
-            [UIView animateWithDuration:0.5 animations:^(void) { _userHeadingTrackingView.alpha = 1.0; }];
-        }
-        
-        [CATransaction begin];
-        [CATransaction setAnimationDuration:0.5];
-        [CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
-        
-        [UIView animateWithDuration:0.5
-                              delay:0.0
-                            options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationCurveEaseInOut
-                         animations:^(void)
-         {
-        
-             
-             
-             CGFloat angle = (M_PI / -180) * [self.routingDelegate getCorrectedHeading];
-
-             /**
-              * always show the view hat and orient it according to direction user is facing
-              */
-             CGFloat trueHeading = self.userLocation.heading.trueHeading;
-             CGFloat viewAngle = (M_PI / 180) * (trueHeading - [self.routingDelegate getCorrectedHeading]);
-
-             NSLog(@"True heading: %f Corrected heading: %f", trueHeading, [self.routingDelegate getCorrectedHeading]);
-             
-             
-             _mapTransform = CGAffineTransformMakeRotation(angle);
-             _userHeadingTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
-             
-             _annotationTransform = CATransform3DMakeAffineTransform(CGAffineTransformMakeRotation(-angle));
-             
-             _mapScrollView.transform = _mapTransform;
-             _overlayView.transform   = _mapTransform;
-             
-             for (RMAnnotation *annotation in _annotations)
-                 if ([annotation.layer isKindOfClass:[RMMarker class]] && ! annotation.isUserLocationAnnotation)
-                     annotation.layer.transform = _annotationTransform;
-             
-             [self correctPositionOfAllAnnotations];
-         }
-                         completion:nil];
-        
-        [CATransaction commit];
-    }
-
     
     
 }
