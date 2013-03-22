@@ -50,6 +50,8 @@
 		25757F501291C8640083D504 /* RMCircle.m in Sources */ = {isa = PBXBuildFile; fileRef = 25757F4E1291C8640083D504 /* RMCircle.m */; };
 		4BA5296A16D52810000CA4A2 /* SMiBikeCPHMapTileSource.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BA5296816D52810000CA4A2 /* SMiBikeCPHMapTileSource.h */; };
 		4BA5296B16D52810000CA4A2 /* SMiBikeCPHMapTileSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BA5296916D52810000CA4A2 /* SMiBikeCPHMapTileSource.m */; };
+		4C57B06116FC85EF00E04E90 /* RMHeadingAnnotation.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C57B05F16FC85EF00E04E90 /* RMHeadingAnnotation.h */; };
+		4C57B06216FC85EF00E04E90 /* RMHeadingAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C57B06016FC85EF00E04E90 /* RMHeadingAnnotation.m */; };
 		96492C400FA8AD3400EBA6D2 /* RMGlobalConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = 96492C3F0FA8AD3400EBA6D2 /* RMGlobalConstants.h */; };
 		B1EB26C610B5D8E6009F8658 /* RMNotifications.h in Headers */ = {isa = PBXBuildFile; fileRef = B1EB26C510B5D8E6009F8658 /* RMNotifications.h */; };
 		B8474BA40EB40094006A0BC1 /* RMDatabaseCache.h in Headers */ = {isa = PBXBuildFile; fileRef = B8474B980EB40094006A0BC1 /* RMDatabaseCache.h */; };
@@ -165,6 +167,8 @@
 		32CA4F630368D1EE00C91783 /* MapView_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapView_Prefix.pch; sourceTree = "<group>"; };
 		4BA5296816D52810000CA4A2 /* SMiBikeCPHMapTileSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMiBikeCPHMapTileSource.h; sourceTree = "<group>"; };
 		4BA5296916D52810000CA4A2 /* SMiBikeCPHMapTileSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMiBikeCPHMapTileSource.m; sourceTree = "<group>"; };
+		4C57B05F16FC85EF00E04E90 /* RMHeadingAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMHeadingAnnotation.h; sourceTree = "<group>"; };
+		4C57B06016FC85EF00E04E90 /* RMHeadingAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RMHeadingAnnotation.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		96492C3F0FA8AD3400EBA6D2 /* RMGlobalConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMGlobalConstants.h; sourceTree = "<group>"; };
 		B1EB26C510B5D8E6009F8658 /* RMNotifications.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMNotifications.h; sourceTree = "<group>"; };
@@ -460,6 +464,8 @@
 				16F98C951590CFF000FF90CE /* RMShape.m */,
 				25757F4D1291C8640083D504 /* RMCircle.h */,
 				25757F4E1291C8640083D504 /* RMCircle.m */,
+				4C57B05F16FC85EF00E04E90 /* RMHeadingAnnotation.h */,
+				4C57B06016FC85EF00E04E90 /* RMHeadingAnnotation.m */,
 			);
 			name = "Markers and other layers";
 			sourceTree = "<group>";
@@ -587,6 +593,7 @@
 				DD5FA1EB15E2B020004EB6C5 /* RMLoadingTileView.h in Headers */,
 				DD4195C9162356900049E6BA /* RMBingSource.h in Headers */,
 				4BA5296A16D52810000CA4A2 /* SMiBikeCPHMapTileSource.h in Headers */,
+				4C57B06116FC85EF00E04E90 /* RMHeadingAnnotation.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -687,6 +694,7 @@
 				DD5FA1EC15E2B020004EB6C5 /* RMLoadingTileView.m in Sources */,
 				DD4195CA162356900049E6BA /* RMBingSource.m in Sources */,
 				4BA5296B16D52810000CA4A2 /* SMiBikeCPHMapTileSource.m in Sources */,
+				4C57B06216FC85EF00E04E90 /* RMHeadingAnnotation.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

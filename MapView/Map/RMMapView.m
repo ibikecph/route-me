@@ -3176,7 +3176,7 @@
     CLLocation * loc = [[CLLocation alloc] initWithCoordinate:newLocation.coordinate altitude:newLocation.altitude horizontalAccuracy:newLocation.horizontalAccuracy verticalAccuracy:newLocation.verticalAccuracy course:newLocation.course speed:newLocation.speed timestamp:newLocation.timestamp];
     
     
-    if (loc == nil || !(newLocation = [self smoothLocation:loc]))
+    if (loc == nil || !(loc = [self smoothLocation:loc]))
         return;
 
     NSLog(@"%@", loc);
@@ -3207,7 +3207,6 @@
          * we do this first to try to fix the escaping POV hat problem
          */
         if (self.routingDelegate && [self.routingDelegate respondsToSelector:@selector(getCorrectedPosition)] && self.userTrackingMode == RMUserTrackingModeFollowWithHeading) {
-            
             
             if (_userHeadingTrackingView.alpha < 1.0) {
                 [UIView animateWithDuration:0.5 animations:^(void) { _userHeadingTrackingView.alpha = 1.0; }];
@@ -3244,28 +3243,25 @@
                  _mapScrollView.transform = _mapTransform;
                  _overlayView.transform   = _mapTransform;
                  
-                 for (RMAnnotation *annotation in _annotations)
-                     if ([annotation.layer isKindOfClass:[RMMarker class]] && ! annotation.isUserLocationAnnotation)
-                         annotation.layer.transform = _annotationTransform;
-                 
-                 [self correctPositionOfAllAnnotations];
+                 //             for (RMAnnotation *annotation in _annotations)
+                 //                 if ([annotation.layer isKindOfClass:[RMMarker class]] && ! annotation.isUserLocationAnnotation)
+                 //                     annotation.layer.transform = _annotationTransform;
+                 //             
+                 //             [self correctPositionOfAllAnnotations];
              }
                              completion:nil];
             
             [CATransaction commit];
+            
         }
 
-        
-        
-        
-        
         
         
         // center on user location unless we're already centered there (or very close)
         //
         CGPoint mapCenterPoint    = [self convertPoint:self.center fromView:self.superview];
         CGPoint userLocationPoint = [self mapPositionForAnnotation:self.userLocation];
-
+        
         if (fabsf(userLocationPoint.x - mapCenterPoint.x) > 1.0 || fabsf(userLocationPoint.y - mapCenterPoint.y) > 1.0)
         {
             if (round(_zoom) >= 10)
@@ -3278,13 +3274,13 @@
             {
                 // otherwise re-center and zoom in to near accuracy confidence
                 //
-                float delta = (newLocation.horizontalAccuracy / 110000) * 1.2; // approx. meter per degree latitude, plus some margin
+                float delta = (self.userLocation.location.horizontalAccuracy / 110000) * 1.2; // approx. meter per degree latitude, plus some margin
 
-                CLLocationCoordinate2D desiredSouthWest = CLLocationCoordinate2DMake(newLocation.coordinate.latitude  - delta,
-                                                                                     newLocation.coordinate.longitude - delta);
+                CLLocationCoordinate2D desiredSouthWest = CLLocationCoordinate2DMake(self.userLocation.location.coordinate.latitude  - delta,
+                                                                                     self.userLocation.location.coordinate.longitude - delta);
 
-                CLLocationCoordinate2D desiredNorthEast = CLLocationCoordinate2DMake(newLocation.coordinate.latitude  + delta,
-                                                                                     newLocation.coordinate.longitude + delta);
+                CLLocationCoordinate2D desiredNorthEast = CLLocationCoordinate2DMake(self.userLocation.location.coordinate.latitude  + delta,
+                                                                                     self.userLocation.location.coordinate.longitude + delta);
 
                 CGFloat pixelRadius = fminf(self.bounds.size.width, self.bounds.size.height) / 2;
 
@@ -3301,14 +3297,15 @@
             }
         }
     }
-
+    
+    
     if ( ! _accuracyCircleAnnotation)
     {
-        _accuracyCircleAnnotation = [[RMAnnotation annotationWithMapView:self coordinate:newLocation.coordinate andTitle:nil] retain];
+        _accuracyCircleAnnotation = [[RMAnnotation annotationWithMapView:self coordinate:self.userLocation.location.coordinate andTitle:nil] retain];
         _accuracyCircleAnnotation.annotationType = kRMAccuracyCircleAnnotationTypeName;
         _accuracyCircleAnnotation.clusteringEnabled = NO;
         _accuracyCircleAnnotation.enabled = NO;
-        _accuracyCircleAnnotation.layer = [[RMCircle alloc] initWithView:self radiusInMeters:newLocation.horizontalAccuracy];
+        _accuracyCircleAnnotation.layer = [[RMCircle alloc] initWithView:self radiusInMeters:self.userLocation.location.horizontalAccuracy];
         _accuracyCircleAnnotation.layer.zPosition = MAXFLOAT - 2; // was -MAXFLOAT
         _accuracyCircleAnnotation.isUserLocationAnnotation = YES;
 
@@ -3320,15 +3317,15 @@
         [self addAnnotation:_accuracyCircleAnnotation];
     }
 
-    if ([loc distanceFromLocation:oldLocation])
-        _accuracyCircleAnnotation.coordinate = newLocation.coordinate;
+    if ([self.userLocation.location distanceFromLocation:oldLocation])
+        _accuracyCircleAnnotation.coordinate = self.userLocation.location.coordinate;
 
-    if (loc.horizontalAccuracy != oldLocation.horizontalAccuracy)
-        ((RMCircle *)_accuracyCircleAnnotation.layer).radiusInMeters = loc.horizontalAccuracy;
+    if (self.userLocation.location.horizontalAccuracy != oldLocation.horizontalAccuracy)
+        ((RMCircle *)_accuracyCircleAnnotation.layer).radiusInMeters = self.userLocation.location.horizontalAccuracy;
 
     if ( ! _trackingHaloAnnotation)
     {
-        _trackingHaloAnnotation = [[RMAnnotation annotationWithMapView:self coordinate:loc.coordinate andTitle:nil] retain];
+        _trackingHaloAnnotation = [[RMAnnotation annotationWithMapView:self coordinate:self.userLocation.location.coordinate andTitle:nil] retain];
         _trackingHaloAnnotation.annotationType = kRMTrackingHaloAnnotationTypeName;
         _trackingHaloAnnotation.clusteringEnabled = NO;
         _trackingHaloAnnotation.enabled = NO;
@@ -3371,19 +3368,19 @@
     }
 
     if ([loc distanceFromLocation:oldLocation])
-        _trackingHaloAnnotation.coordinate = loc.coordinate;
+        _trackingHaloAnnotation.coordinate = self.userLocation.location.coordinate;
 
     self.userLocation.layer.hidden = ( ! CLLocationCoordinate2DIsValid(self.userLocation.coordinate) || self.userTrackingMode == RMUserTrackingModeFollowWithHeading);
 
     if (_userLocationTrackingView)
         _userLocationTrackingView.hidden = ! CLLocationCoordinate2DIsValid(self.userLocation.coordinate);
 
-    _accuracyCircleAnnotation.layer.hidden = newLocation.horizontalAccuracy <= 10;
+    _accuracyCircleAnnotation.layer.hidden = self.userLocation.location.horizontalAccuracy <= 10;
 
-    _trackingHaloAnnotation.layer.hidden = ( ! CLLocationCoordinate2DIsValid(self.userLocation.coordinate) || newLocation.horizontalAccuracy > 10 || self.userTrackingMode == RMUserTrackingModeFollowWithHeading);
+    _trackingHaloAnnotation.layer.hidden = ( ! CLLocationCoordinate2DIsValid(self.userLocation.coordinate) || self.userLocation.location.horizontalAccuracy > 10 || self.userTrackingMode == RMUserTrackingModeFollowWithHeading);
 
     if (_userHaloTrackingView)
-        _userHaloTrackingView.hidden = ( ! CLLocationCoordinate2DIsValid(self.userLocation.coordinate) || newLocation.horizontalAccuracy > 10);
+        _userHaloTrackingView.hidden = ( ! CLLocationCoordinate2DIsValid(self.userLocation.coordinate) || self.userLocation.location.horizontalAccuracy > 10);
 
     if ( ! [_annotations containsObject:self.userLocation])
         [self addAnnotation:self.userLocation];
@@ -3410,7 +3407,7 @@
         [_delegate mapView:self didUpdateUserLocation:self.userLocation];
 
     if (newHeading.trueHeading != 0 && self.userTrackingMode == RMUserTrackingModeFollowWithHeading)
-    {
+   {
         if (_userHeadingTrackingView.alpha < 1.0) {
             [UIView animateWithDuration:0.5 animations:^(void) { _userHeadingTrackingView.alpha = 1.0; }];
         }
