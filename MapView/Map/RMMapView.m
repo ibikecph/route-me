@@ -3243,11 +3243,11 @@
                  _mapScrollView.transform = _mapTransform;
                  _overlayView.transform   = _mapTransform;
                  
-                 //             for (RMAnnotation *annotation in _annotations)
-                 //                 if ([annotation.layer isKindOfClass:[RMMarker class]] && ! annotation.isUserLocationAnnotation)
-                 //                     annotation.layer.transform = _annotationTransform;
-                 //             
-                 //             [self correctPositionOfAllAnnotations];
+                 for (RMAnnotation *annotation in _annotations)
+                     if ([annotation.layer isKindOfClass:[RMMarker class]] && ! annotation.isUserLocationAnnotation)
+                         annotation.layer.transform = _annotationTransform;
+                 
+                 [self correctPositionOfAllAnnotations];
              }
                              completion:nil];
             
@@ -3423,7 +3423,7 @@
                          {
 
                              if (self.routingDelegate && [self.routingDelegate respondsToSelector:@selector(getCorrectedHeading)]) {
-                                 CGFloat trueHeading = self.userLocation.heading.trueHeading;
+                                 CGFloat trueHeading = newHeading.trueHeading;
                                  CGFloat viewAngle = (M_PI / 180) * (trueHeading - [self.routingDelegate getCorrectedHeading]);
                                  NSLog(@"True heading: %f Corrected heading: %f", trueHeading, [self.routingDelegate getCorrectedHeading]);
                                  _userHeadingTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
