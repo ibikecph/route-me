@@ -52,6 +52,10 @@
 		4BA5296B16D52810000CA4A2 /* SMiBikeCPHMapTileSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BA5296916D52810000CA4A2 /* SMiBikeCPHMapTileSource.m */; };
 		4C57B06116FC85EF00E04E90 /* RMHeadingAnnotation.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C57B05F16FC85EF00E04E90 /* RMHeadingAnnotation.h */; };
 		4C57B06216FC85EF00E04E90 /* RMHeadingAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C57B06016FC85EF00E04E90 /* RMHeadingAnnotation.m */; };
+		4C9CDAFB1705D4B900C28D70 /* RMPermanentCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C9CDAF91705D4B900C28D70 /* RMPermanentCache.h */; };
+		4C9CDAFC1705D4B900C28D70 /* RMPermanentCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C9CDAFA1705D4B900C28D70 /* RMPermanentCache.m */; };
+		4C9CDAFF1705D87800C28D70 /* SMPermanentTileSource.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C9CDAFD1705D87700C28D70 /* SMPermanentTileSource.h */; };
+		4C9CDB001705D87800C28D70 /* SMPermanentTileSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C9CDAFE1705D87800C28D70 /* SMPermanentTileSource.m */; };
 		96492C400FA8AD3400EBA6D2 /* RMGlobalConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = 96492C3F0FA8AD3400EBA6D2 /* RMGlobalConstants.h */; };
 		B1EB26C610B5D8E6009F8658 /* RMNotifications.h in Headers */ = {isa = PBXBuildFile; fileRef = B1EB26C510B5D8E6009F8658 /* RMNotifications.h */; };
 		B8474BA40EB40094006A0BC1 /* RMDatabaseCache.h in Headers */ = {isa = PBXBuildFile; fileRef = B8474B980EB40094006A0BC1 /* RMDatabaseCache.h */; };
@@ -169,6 +173,10 @@
 		4BA5296916D52810000CA4A2 /* SMiBikeCPHMapTileSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMiBikeCPHMapTileSource.m; sourceTree = "<group>"; };
 		4C57B05F16FC85EF00E04E90 /* RMHeadingAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMHeadingAnnotation.h; sourceTree = "<group>"; };
 		4C57B06016FC85EF00E04E90 /* RMHeadingAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RMHeadingAnnotation.m; sourceTree = "<group>"; };
+		4C9CDAF91705D4B900C28D70 /* RMPermanentCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMPermanentCache.h; sourceTree = "<group>"; };
+		4C9CDAFA1705D4B900C28D70 /* RMPermanentCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RMPermanentCache.m; sourceTree = "<group>"; };
+		4C9CDAFD1705D87700C28D70 /* SMPermanentTileSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMPermanentTileSource.h; sourceTree = "<group>"; };
+		4C9CDAFE1705D87800C28D70 /* SMPermanentTileSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMPermanentTileSource.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		96492C3F0FA8AD3400EBA6D2 /* RMGlobalConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMGlobalConstants.h; sourceTree = "<group>"; };
 		B1EB26C510B5D8E6009F8658 /* RMNotifications.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMNotifications.h; sourceTree = "<group>"; };
@@ -275,6 +283,8 @@
 		16EC85CB133CA69A00219947 /* Map sources */ = {
 			isa = PBXGroup;
 			children = (
+				4C9CDAFD1705D87700C28D70 /* SMPermanentTileSource.h */,
+				4C9CDAFE1705D87800C28D70 /* SMPermanentTileSource.m */,
 				4BA5296816D52810000CA4A2 /* SMiBikeCPHMapTileSource.h */,
 				4BA5296916D52810000CA4A2 /* SMiBikeCPHMapTileSource.m */,
 				16E5A63815E531F200C92A5A /* RMCompositeSource.h */,
@@ -385,6 +395,8 @@
 				B83E64D30E80E73F001663B6 /* RMMemoryCache.m */,
 				B8474B980EB40094006A0BC1 /* RMDatabaseCache.h */,
 				B8474B990EB40094006A0BC1 /* RMDatabaseCache.m */,
+				4C9CDAF91705D4B900C28D70 /* RMPermanentCache.h */,
+				4C9CDAFA1705D4B900C28D70 /* RMPermanentCache.m */,
 			);
 			name = "Tile Cache";
 			sourceTree = "<group>";
@@ -594,6 +606,8 @@
 				DD4195C9162356900049E6BA /* RMBingSource.h in Headers */,
 				4BA5296A16D52810000CA4A2 /* SMiBikeCPHMapTileSource.h in Headers */,
 				4C57B06116FC85EF00E04E90 /* RMHeadingAnnotation.h in Headers */,
+				4C9CDAFB1705D4B900C28D70 /* RMPermanentCache.h in Headers */,
+				4C9CDAFF1705D87800C28D70 /* SMPermanentTileSource.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -695,6 +709,8 @@
 				DD4195CA162356900049E6BA /* RMBingSource.m in Sources */,
 				4BA5296B16D52810000CA4A2 /* SMiBikeCPHMapTileSource.m in Sources */,
 				4C57B06216FC85EF00E04E90 /* RMHeadingAnnotation.m in Sources */,
+				4C9CDAFC1705D4B900C28D70 /* RMPermanentCache.m in Sources */,
+				4C9CDB001705D87800C28D70 /* SMPermanentTileSource.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -30,6 +30,7 @@
 #import "RMTileCache.h"
 #import "RMMemoryCache.h"
 #import "RMDatabaseCache.h"
+#import "RMPermanentCache.h"
 
 #import "RMConfiguration.h"
 #import "RMTileSource.h"
@@ -38,6 +39,7 @@
 
 - (id <RMTileCache>)memoryCacheWithConfig:(NSDictionary *)cfg;
 - (id <RMTileCache>)databaseCacheWithConfig:(NSDictionary *)cfg;
+- (id <RMTileCache>)permanentCacheWithConfig:(NSDictionary *)cfg;
 
 @end
 
@@ -89,6 +91,10 @@
             if ([@"db-cache" isEqualToString:type])
                 newCache = [self databaseCacheWithConfig:cfg];
 
+            if ([@"permanent-cache" isEqualToString:type])
+                newCache = [self permanentCacheWithConfig:cfg];
+
+            
             if (newCache)
                 [_tileCaches addObject:newCache];
             else
@@ -417,8 +423,115 @@ static NSMutableDictionary *predicateValues = nil;
     [dbCache setPurgeStrategy:strategy];
     [dbCache setMinimalPurge:minimalPurge];
     [dbCache setExpiryPeriod:_expiryPeriod];
-
     return dbCache;
+    
 }
+
+- (id <RMTileCache>)permanentCacheWithConfig:(NSDictionary *)cfg
+{
+    BOOL useCacheDir = NO;
+    RMCachePurgeStrategy strategy = RMCachePurgeStrategyFIFO;
+    
+    NSUInteger capacity = 1000;
+    NSUInteger minimalPurge = capacity / 10;
+    
+    // Defaults
+    
+    NSNumber *capacityNumber = [cfg objectForKey:@"capacity"];
+    
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad && [cfg objectForKey:@"capacity-ipad"])
+    {
+        NSLog(@"***** WARNING: deprecated config option capacity-ipad, use a predicate instead: -[%@ %@] (line %d)", self, NSStringFromSelector(_cmd), __LINE__);
+        capacityNumber = [cfg objectForKey:@"capacity-ipad"];
+    }
+    
+    NSString *strategyStr = [cfg objectForKey:@"strategy"];
+    NSNumber *useCacheDirNumber = [cfg objectForKey:@"useCachesDirectory"];
+    NSNumber *minimalPurgeNumber = [cfg objectForKey:@"minimalPurge"];
+    NSNumber *expiryPeriodNumber = [cfg objectForKey:@"expiryPeriod"];
+    
+    NSArray *predicates = [cfg objectForKey:@"predicates"];
+    
+    if (predicates)
+    {
+        NSDictionary *predicateValues = [self predicateValues];
+        
+        for (NSDictionary *predicateDescription in predicates)
+        {
+            NSString *predicate = [predicateDescription objectForKey:@"predicate"];
+            if ( ! predicate)
+                continue;
+            
+            if ( ! [[NSPredicate predicateWithFormat:predicate] evaluateWithObject:predicateValues])
+                continue;
+            
+            if ([predicateDescription objectForKey:@"capacity"])
+                capacityNumber = [predicateDescription objectForKey:@"capacity"];
+            if ([predicateDescription objectForKey:@"strategy"])
+                strategyStr = [predicateDescription objectForKey:@"strategy"];
+            if ([predicateDescription objectForKey:@"useCachesDirectory"])
+                useCacheDirNumber = [predicateDescription objectForKey:@"useCachesDirectory"];
+            if ([predicateDescription objectForKey:@"minimalPurge"])
+                minimalPurgeNumber = [predicateDescription objectForKey:@"minimalPurge"];
+            if ([predicateDescription objectForKey:@"expiryPeriod"])
+                expiryPeriodNumber = [predicateDescription objectForKey:@"expiryPeriod"];
+        }
+    }
+    
+    // Check the values
+    
+    if (capacityNumber != nil)
+    {
+        NSInteger value = [capacityNumber intValue];
+        
+        // 0 is valid: it means no capacity limit
+        if (value >= 0)
+        {
+            capacity =  value;
+            minimalPurge = MAX(1,capacity / 10);
+        }
+        else
+        {
+            RMLog(@"illegal value for capacity: %d", value);
+        }
+    }
+    
+    if (strategyStr != nil)
+    {
+        if ([strategyStr caseInsensitiveCompare:@"FIFO"] == NSOrderedSame) strategy = RMCachePurgeStrategyFIFO;
+        if ([strategyStr caseInsensitiveCompare:@"LRU"] == NSOrderedSame) strategy = RMCachePurgeStrategyLRU;
+    }
+    else
+    {
+        strategyStr = @"FIFO";
+    }
+    
+    if (useCacheDirNumber != nil)
+        useCacheDir = [useCacheDirNumber boolValue];
+    
+    if (minimalPurgeNumber != nil && capacity != 0)
+    {
+        NSUInteger value = [minimalPurgeNumber unsignedIntValue];
+        
+        if (value > 0 && value<=capacity)
+            minimalPurge = value;
+        else
+            RMLog(@"minimalPurge must be at least one and at most the cache capacity");
+    }
+    
+    if (expiryPeriodNumber != nil)
+        _expiryPeriod = [expiryPeriodNumber doubleValue];
+    
+    RMLog(@"Database cache configuration: {capacity : %d, strategy : %@, minimalPurge : %d, expiryPeriod: %.0f, useCacheDir : %@}", capacity, strategyStr, minimalPurge, _expiryPeriod, useCacheDir ? @"YES" : @"NO");
+    
+    RMPermanentCache *dbCache = [[[RMPermanentCache alloc] initUsingCacheDir:useCacheDir] autorelease];
+    [dbCache setCapacity:capacity];
+    [dbCache setPurgeStrategy:strategy];
+    [dbCache setMinimalPurge:minimalPurge];
+    [dbCache setExpiryPeriod:_expiryPeriod];
+    return dbCache;
+    
+}
+
 
 @end

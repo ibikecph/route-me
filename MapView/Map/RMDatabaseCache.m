@@ -186,6 +186,7 @@
 
     [_queue inDatabase:^(FMDatabase *db)
      {
+         RMLog(@"Tile key:%@ Cache key:%@", [RMTileCache tileHash:tile], aCacheKey);
          FMResultSet *results = [db executeQuery:@"SELECT data FROM ZCACHE WHERE tile_hash = ? AND cache_key = ?", [RMTileCache tileHash:tile], aCacheKey];
 
          if ([db hadError])
