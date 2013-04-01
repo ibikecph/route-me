@@ -2869,7 +2869,7 @@
         case RMUserTrackingModeNone:
         default:
         {
-            [_locationManager stopUpdatingHeading];
+//            [_locationManager stopUpdatingHeading];
 
             if (_userLocationTrackingView || _userHeadingTrackingView || _userHaloTrackingView)
             {
@@ -2886,7 +2886,7 @@
         {
             self.showsUserLocation = YES;
 
-            [_locationManager stopUpdatingHeading];
+//            [_locationManager stopUpdatingHeading];
 
             if (self.userLocation)
                 [self locationManager:_locationManager didUpdateToLocation:self.userLocation.location fromLocation:self.userLocation.location];
@@ -2978,9 +2978,56 @@
             if (self.zoom < 3)
                 [self zoomByFactor:exp2f(3 - [self zoom]) near:self.center animated:YES];
 
+
             if (self.userLocation)
                 [self locationManager:_locationManager didUpdateToLocation:self.userLocation.location fromLocation:self.userLocation.location];
 
+            
+            if (self.routingDelegate && [self.routingDelegate respondsToSelector:@selector(getCorrectedPosition)] && self.userTrackingMode == RMUserTrackingModeFollowWithHeading) {
+                
+                if (_userHeadingTrackingView.alpha < 1.0) {
+                    [UIView animateWithDuration:0.5 animations:^(void) { _userHeadingTrackingView.alpha = 1.0; }];
+                }
+                
+                [CATransaction begin];
+                [CATransaction setAnimationDuration:0.5];
+                [CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
+                
+                CGFloat angle = (M_PI / -180) * [self.routingDelegate getCorrectedHeading];
+                /**
+                 * always show the view hat and orient it according to direction user is facing
+                 */
+                CGFloat trueHeading = self.userLocation.heading.trueHeading;
+//                CGFloat viewAngle = (M_PI / 180) * trueHeading + angle;
+                
+                [UIView animateWithDuration:0.5 delay:0.0 options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationCurveEaseInOut animations:^(void) {
+                    
+                    NSLog(@"True heading: %f Corrected heading: %f", trueHeading, [self.routingDelegate getCorrectedHeading]);
+                    
+                    _mapTransform = CGAffineTransformMakeRotation(angle);
+//                    _userHeadingTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
+                    
+                    _annotationTransform = CATransform3DMakeAffineTransform(CGAffineTransformMakeRotation(-angle));
+                    
+                    _mapScrollView.transform = _mapTransform;
+                    _overlayView.transform   = _mapTransform;
+                    
+                    for (RMAnnotation *annotation in _annotations)
+                        if ([annotation.layer isKindOfClass:[RMMarker class]] && ! annotation.isUserLocationAnnotation)
+                            annotation.layer.transform = _annotationTransform;
+                    
+                    [self correctPositionOfAllAnnotations];
+                } completion:^(BOOL finished) {
+                    CGFloat trueHeading = self.userLocation.heading.trueHeading;
+                    CGFloat viewAngle = (M_PI / 180) * (trueHeading - [self.routingDelegate getCorrectedHeading]);
+                    _userHeadingTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
+                }];
+                
+                [CATransaction commit];
+                
+            }
+            
+            
             [self updateHeadingForDeviceOrientation];
 
             [_locationManager startUpdatingHeading];
@@ -3093,11 +3140,10 @@
             /**
              * always show the view hat and orient it according to direction user is facing
              */
-            CGFloat trueHeading = self.userLocation.heading.trueHeading;
-            CGFloat viewAngle = (M_PI / 180) * trueHeading + angle;
 
             [UIView animateWithDuration:0.5 delay:0.0 options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationCurveEaseInOut animations:^(void) {
-                
+                CGFloat trueHeading = self.userLocation.heading.trueHeading;
+                CGFloat viewAngle = (M_PI / 180) * trueHeading + angle;                
                 NSLog(@"True heading: %f Corrected heading: %f", trueHeading, [self.routingDelegate getCorrectedHeading]);
                 
                 _mapTransform = CGAffineTransformMakeRotation(angle);
@@ -3262,6 +3308,13 @@
         [_locationManager performSelector:@selector(dismissHeadingCalibrationDisplay) withObject:nil afterDelay:10.0];
 
     return self.displayHeadingCalibration;
+}
+
+- (void)updateHeading {
+    CGFloat trueHeading = self.userLocation.heading.trueHeading;
+    CGFloat viewAngle = (M_PI / 180) * (trueHeading - [self.routingDelegate getCorrectedHeading]);
+    RMLog(@"Did update heading: True heading: %f Corrected heading: %f", trueHeading, [self.routingDelegate getCorrectedHeading]);
+    _userHeadingTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
 }
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
