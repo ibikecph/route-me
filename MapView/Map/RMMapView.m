@@ -2870,14 +2870,13 @@
         default:
         {
 //            [_locationManager stopUpdatingHeading];
-
             if (_userLocationTrackingView || _userHeadingTrackingView || _userHaloTrackingView)
             {
                 [_userLocationTrackingView removeFromSuperview]; _userLocationTrackingView = nil;
                 [_userHeadingTrackingView removeFromSuperview]; _userHeadingTrackingView = nil;
                 [_userHaloTrackingView removeFromSuperview]; _userHaloTrackingView = nil;
             }
-
+            
             self.userLocation.layer.hidden = NO;
 
             break;
@@ -2897,7 +2896,7 @@
                 [_userHeadingTrackingView removeFromSuperview]; _userHeadingTrackingView = nil;
                 [_userHaloTrackingView removeFromSuperview]; _userHaloTrackingView = nil;
             }
-
+            
             [CATransaction setAnimationDuration:0.5];
             [CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
 
@@ -2929,51 +2928,53 @@
             self.showsUserLocation = YES;
 
             self.userLocation.layer.hidden = YES;
-
+            
             _userHaloTrackingView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"TrackingDotHalo"]];
-
+            
             _userHaloTrackingView.center = CGPointMake(round([self bounds].size.width  / 2),
-                                                      round([self bounds].size.height / 2));
-
+                                                       round([self bounds].size.height / 2));
+            
             _userHaloTrackingView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin  |
-                                                    UIViewAutoresizingFlexibleRightMargin |
-                                                    UIViewAutoresizingFlexibleTopMargin   |
-                                                    UIViewAutoresizingFlexibleBottomMargin;
-
+            UIViewAutoresizingFlexibleRightMargin |
+            UIViewAutoresizingFlexibleTopMargin   |
+            UIViewAutoresizingFlexibleBottomMargin;
+            
             for (NSString *animationKey in _trackingHaloAnnotation.layer.animationKeys)
                 [_userHaloTrackingView.layer addAnimation:[[[_trackingHaloAnnotation.layer animationForKey:animationKey] copy] autorelease] forKey:animationKey];
-
+            
             [self insertSubview:_userHaloTrackingView aboveSubview:_overlayView]; //changed to make the usertracking appear over the map. was below
-
+            
             _userHeadingTrackingView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"HeadingAngleSmall.png"]];
-
+            
             _userHeadingTrackingView.frame = CGRectMake((self.bounds.size.width  / 2) - (_userHeadingTrackingView.bounds.size.width / 2),
-                                                       (self.bounds.size.height / 2) - _userHeadingTrackingView.bounds.size.height,
-                                                       _userHeadingTrackingView.bounds.size.width,
-                                                       _userHeadingTrackingView.bounds.size.height * 2);
-
+                                                        (self.bounds.size.height / 2) - _userHeadingTrackingView.bounds.size.height,
+                                                        _userHeadingTrackingView.bounds.size.width,
+                                                        _userHeadingTrackingView.bounds.size.height * 2);
+            
             _userHeadingTrackingView.contentMode = UIViewContentModeTop;
-
+            
             _userHeadingTrackingView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin  |
-                                                        UIViewAutoresizingFlexibleRightMargin |
-                                                        UIViewAutoresizingFlexibleTopMargin   |
-                                                        UIViewAutoresizingFlexibleBottomMargin;
-
-            _userHeadingTrackingView.alpha = 0.0;
-
+            UIViewAutoresizingFlexibleRightMargin |
+            UIViewAutoresizingFlexibleTopMargin   |
+            UIViewAutoresizingFlexibleBottomMargin;
+            
+            _userHeadingTrackingView.alpha = 1.0;
+            
             [self insertSubview:_userHeadingTrackingView aboveSubview:_overlayView]; //changed to make the usertracking appear over the map.  was below
 
+
             _userLocationTrackingView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"TrackingDot.png"]];
-
-            _userLocationTrackingView.center = CGPointMake(round([self bounds].size.width  / 2), 
-                                                          round([self bounds].size.height / 2));
-
+            
+            _userLocationTrackingView.center = CGPointMake(round([self bounds].size.width  / 2),
+                                                           round([self bounds].size.height / 2));
+            
             _userLocationTrackingView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin  |
-                                                         UIViewAutoresizingFlexibleRightMargin |
-                                                         UIViewAutoresizingFlexibleTopMargin   |
-                                                         UIViewAutoresizingFlexibleBottomMargin;
+            UIViewAutoresizingFlexibleRightMargin |
+            UIViewAutoresizingFlexibleTopMargin   |
+            UIViewAutoresizingFlexibleBottomMargin;
             
             [self insertSubview:_userLocationTrackingView aboveSubview:_overlayView]; //changed to make the usertracking appear over the map. was below:_userHeadingTrackingView
+
 
             if (self.zoom < 3)
                 [self zoomByFactor:exp2f(3 - [self zoom]) near:self.center animated:YES];
@@ -2984,11 +2985,7 @@
 
             
             if (self.routingDelegate && [self.routingDelegate respondsToSelector:@selector(getCorrectedPosition)] && self.userTrackingMode == RMUserTrackingModeFollowWithHeading) {
-                
-                if (_userHeadingTrackingView.alpha < 1.0) {
-                    [UIView animateWithDuration:0.5 animations:^(void) { _userHeadingTrackingView.alpha = 1.0; }];
-                }
-                
+                                
                 [CATransaction begin];
                 [CATransaction setAnimationDuration:0.5];
                 [CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
