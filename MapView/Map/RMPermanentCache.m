@@ -158,7 +158,7 @@
     [_writeQueueLock lock];
     
     [_queue inDatabase:^(FMDatabase *db) {
-         RMLog(@"Tile key:%@ Cache key:%@", [RMTileCache tileHash:tile], aCacheKey);
+//         RMLog(@"Tile key:%@ Cache key:%@", [RMTileCache tileHash:tile], aCacheKey);
          FMResultSet *results = [db executeQuery:@"SELECT image FROM tiles WHERE tilekey = ?", [RMTileCache tileHash:tile]];
          
          if ([db hadError])
