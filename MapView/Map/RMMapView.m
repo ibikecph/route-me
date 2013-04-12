@@ -1206,6 +1206,10 @@
 
     if (self.userTrackingMode != RMUserTrackingModeNone)
         self.userTrackingMode = RMUserTrackingModeNone;
+    
+    if (_mapScrollView.zoomScale > _mapScrollView.maximumZoomScale) {
+        [self correctPositionOfAllAnnotations];
+    }
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
@@ -1263,7 +1267,7 @@
         CGSize delta = CGSizeMake(scrollView.contentOffset.x - _lastContentOffset.x, scrollView.contentOffset.y - _lastContentOffset.y);
         CGPoint newOffset = CGPointMake(_loadingTileView.contentOffset.x + delta.width, _loadingTileView.contentOffset.y + delta.height);
         _loadingTileView.contentOffset = newOffset;
-    }
+    }    
 }
 
 - (void)scrollViewDidZoom:(UIScrollView *)scrollView
