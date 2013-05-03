@@ -57,8 +57,8 @@
 
     lineWidth = kDefaultLineWidth;
     drawingMode = kCGPathFillStroke;
-    lineCap = kCGLineCapButt;
-    lineJoin = kCGLineJoinMiter;
+    lineCap = kCGLineCapRound;
+    lineJoin = kCGLineJoinRound;
     lineColor = [UIColor blackColor];
     fillColor = [UIColor redColor];
 
@@ -197,7 +197,7 @@
     }
 
     CGContextScaleCTM(theContext, scale, scale);
-
+    
     CGContextBeginPath(theContext);
     CGContextAddPath(theContext, path);
 
