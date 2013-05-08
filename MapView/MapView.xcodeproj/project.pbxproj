@@ -171,6 +171,8 @@
 		32CA4F630368D1EE00C91783 /* MapView_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapView_Prefix.pch; sourceTree = "<group>"; };
 		4BA5296816D52810000CA4A2 /* SMiBikeCPHMapTileSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMiBikeCPHMapTileSource.h; sourceTree = "<group>"; };
 		4BA5296916D52810000CA4A2 /* SMiBikeCPHMapTileSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMiBikeCPHMapTileSource.m; sourceTree = "<group>"; };
+		4C3B73B4173A833000E65316 /* arrow_position.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = arrow_position.png; path = Map/Resources/arrow_position.png; sourceTree = "<group>"; };
+		4C3B73B5173A833000E65316 /* arrow_position@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "arrow_position@2x.png"; path = "Map/Resources/arrow_position@2x.png"; sourceTree = "<group>"; };
 		4C57B05F16FC85EF00E04E90 /* RMHeadingAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMHeadingAnnotation.h; sourceTree = "<group>"; };
 		4C57B06016FC85EF00E04E90 /* RMHeadingAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RMHeadingAnnotation.m; sourceTree = "<group>"; };
 		4C9CDAF91705D4B900C28D70 /* RMPermanentCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMPermanentCache.h; sourceTree = "<group>"; };
@@ -430,6 +432,8 @@
 		B83E67570E80F3FB001663B6 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				4C3B73B4173A833000E65316 /* arrow_position.png */,
+				4C3B73B5173A833000E65316 /* arrow_position@2x.png */,
 				8D1107310486CEB800E47090 /* Info.plist */,
 				B86F26E10E877802007A3773 /* DesktopMapView-Info.plist */,
 				2B2BADD60FA3B45A00EE37AA /* marker-X.png */,

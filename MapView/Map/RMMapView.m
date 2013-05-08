@@ -2768,6 +2768,7 @@
     {
         RMRequireAsset(@"HeadingAngleSmall.png");
         RMRequireAsset(@"TrackingDot.png");
+        RMRequireAsset(@"arrow_position.png");
         RMRequireAsset(@"TrackingDotHalo.png");
         RMRequireAsset(@"TrackingHeading.png");
         RMRequireAsset(@"TrackingLocation.png");
@@ -2873,12 +2874,11 @@
         case RMUserTrackingModeNone:
         default:
         {
-//            [_locationManager stopUpdatingHeading];
             if (_userLocationTrackingView || _userHeadingTrackingView || _userHaloTrackingView)
             {
                 [_userLocationTrackingView removeFromSuperview]; _userLocationTrackingView = nil;
-                [_userHeadingTrackingView removeFromSuperview]; _userHeadingTrackingView = nil;
-                [_userHaloTrackingView removeFromSuperview]; _userHaloTrackingView = nil;
+//                [_userHeadingTrackingView removeFromSuperview]; _userHeadingTrackingView = nil;
+//                [_userHaloTrackingView removeFromSuperview]; _userHaloTrackingView = nil;
             }
             
             self.userLocation.layer.hidden = NO;
@@ -2889,16 +2889,14 @@
         {
             self.showsUserLocation = YES;
 
-//            [_locationManager stopUpdatingHeading];
-
             if (self.userLocation)
                 [self locationManager:_locationManager didUpdateToLocation:self.userLocation.location fromLocation:self.userLocation.location];
 
             if (_userLocationTrackingView || _userHeadingTrackingView || _userHaloTrackingView)
             {
                 [_userLocationTrackingView removeFromSuperview]; _userLocationTrackingView = nil;
-                [_userHeadingTrackingView removeFromSuperview]; _userHeadingTrackingView = nil;
-                [_userHaloTrackingView removeFromSuperview]; _userHaloTrackingView = nil;
+//                [_userHeadingTrackingView removeFromSuperview]; _userHeadingTrackingView = nil;
+//                [_userHaloTrackingView removeFromSuperview]; _userHaloTrackingView = nil;
             }
             
             [CATransaction setAnimationDuration:0.5];
@@ -2933,41 +2931,41 @@
 
             self.userLocation.layer.hidden = YES;
             
-            _userHaloTrackingView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"TrackingDotHalo"]];
+//            _userHaloTrackingView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"TrackingDotHalo"]];
+//            
+//            _userHaloTrackingView.center = CGPointMake(round([self bounds].size.width  / 2),
+//                                                       round([self bounds].size.height / 2));
+//            
+//            _userHaloTrackingView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin  |
+//            UIViewAutoresizingFlexibleRightMargin |
+//            UIViewAutoresizingFlexibleTopMargin   |
+//            UIViewAutoresizingFlexibleBottomMargin;
+//            
+//            for (NSString *animationKey in _trackingHaloAnnotation.layer.animationKeys)
+//                [_userHaloTrackingView.layer addAnimation:[[[_trackingHaloAnnotation.layer animationForKey:animationKey] copy] autorelease] forKey:animationKey];
+//            
+//            [self insertSubview:_userHaloTrackingView aboveSubview:_overlayView]; //changed to make the usertracking appear over the map. was below
             
-            _userHaloTrackingView.center = CGPointMake(round([self bounds].size.width  / 2),
-                                                       round([self bounds].size.height / 2));
-            
-            _userHaloTrackingView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin  |
-            UIViewAutoresizingFlexibleRightMargin |
-            UIViewAutoresizingFlexibleTopMargin   |
-            UIViewAutoresizingFlexibleBottomMargin;
-            
-            for (NSString *animationKey in _trackingHaloAnnotation.layer.animationKeys)
-                [_userHaloTrackingView.layer addAnimation:[[[_trackingHaloAnnotation.layer animationForKey:animationKey] copy] autorelease] forKey:animationKey];
-            
-            [self insertSubview:_userHaloTrackingView aboveSubview:_overlayView]; //changed to make the usertracking appear over the map. was below
-            
-            _userHeadingTrackingView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"HeadingAngleSmall.png"]];
-            
-            _userHeadingTrackingView.frame = CGRectMake((self.bounds.size.width  / 2) - (_userHeadingTrackingView.bounds.size.width / 2),
-                                                        (self.bounds.size.height / 2) - _userHeadingTrackingView.bounds.size.height,
-                                                        _userHeadingTrackingView.bounds.size.width,
-                                                        _userHeadingTrackingView.bounds.size.height * 2);
-            
-            _userHeadingTrackingView.contentMode = UIViewContentModeTop;
-            
-            _userHeadingTrackingView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin  |
-            UIViewAutoresizingFlexibleRightMargin |
-            UIViewAutoresizingFlexibleTopMargin   |
-            UIViewAutoresizingFlexibleBottomMargin;
-            
-            _userHeadingTrackingView.alpha = 1.0;
-            
-            [self insertSubview:_userHeadingTrackingView aboveSubview:_overlayView]; //changed to make the usertracking appear over the map.  was below
+//            _userHeadingTrackingView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"HeadingAngleSmall.png"]];
+//            
+//            _userHeadingTrackingView.frame = CGRectMake((self.bounds.size.width  / 2) - (_userHeadingTrackingView.bounds.size.width / 2),
+//                                                        (self.bounds.size.height / 2) - _userHeadingTrackingView.bounds.size.height,
+//                                                        _userHeadingTrackingView.bounds.size.width,
+//                                                        _userHeadingTrackingView.bounds.size.height * 2);
+//            
+//            _userHeadingTrackingView.contentMode = UIViewContentModeTop;
+//            
+//            _userHeadingTrackingView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin  |
+//            UIViewAutoresizingFlexibleRightMargin |
+//            UIViewAutoresizingFlexibleTopMargin   |
+//            UIViewAutoresizingFlexibleBottomMargin;
+//            
+//            _userHeadingTrackingView.alpha = 1.0;
+//            
+//            [self insertSubview:_userHeadingTrackingView aboveSubview:_overlayView]; //changed to make the usertracking appear over the map.  was below
 
 
-            _userLocationTrackingView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"TrackingDot.png"]];
+            _userLocationTrackingView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"arrow_position.png"]];
             
             _userLocationTrackingView.center = CGPointMake(round([self bounds].size.width  / 2),
                                                            round([self bounds].size.height / 2));
@@ -3006,8 +3004,6 @@
                     NSLog(@"True heading: %f Corrected heading: %f", trueHeading, [self.routingDelegate getCorrectedHeading]);
                     
                     _mapTransform = CGAffineTransformMakeRotation(angle);
-//                    _userHeadingTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
-                    
                     _annotationTransform = CATransform3DMakeAffineTransform(CGAffineTransformMakeRotation(-angle));
                     
                     _mapScrollView.transform = _mapTransform;
@@ -3021,7 +3017,8 @@
                 } completion:^(BOOL finished) {
                     CGFloat trueHeading = self.userLocation.heading.trueHeading;
                     CGFloat viewAngle = (M_PI / 180) * (trueHeading - [self.routingDelegate getCorrectedHeading]);
-                    _userHeadingTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
+                    _userLocationTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
+//                    _userHeadingTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
                 }];
                 
                 [CATransaction commit];
@@ -3129,16 +3126,17 @@
          */
         if (self.routingDelegate && [self.routingDelegate respondsToSelector:@selector(getCorrectedPosition)] && self.userTrackingMode == RMUserTrackingModeFollowWithHeading) {
             
-            if (_userHeadingTrackingView.alpha < 1.0) {
-                [UIView animateWithDuration:0.5 animations:^(void) { _userHeadingTrackingView.alpha = 1.0; }];
-            }
+//            if (_userHeadingTrackingView.alpha < 1.0) {
+//                [UIView animateWithDuration:0.5 animations:^(void) { _userHeadingTrackingView.alpha = 1.0; }];
+//            }
             
             CGFloat angle = (M_PI / -180) * [self.routingDelegate getCorrectedHeading];
             CGFloat trueHeading = self.userLocation.heading.trueHeading;
             CGFloat viewAngle = (M_PI / 180) * trueHeading + angle;
             if (CGAffineTransformEqualToTransform(_mapTransform, CGAffineTransformMakeRotation(angle)) == NO) {
                 _mapTransform = CGAffineTransformMakeRotation(angle);
-                _userHeadingTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
+//                _userHeadingTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
+                _userLocationTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
                 _annotationTransform = CATransform3DMakeAffineTransform(CGAffineTransformMakeRotation(-angle));
                 [CATransaction begin];
                 [CATransaction setAnimationDuration:0.5];
@@ -3154,7 +3152,8 @@
                 } completion:^(BOOL finished) {
                     CGFloat trueHeading = self.userLocation.heading.trueHeading;
                     CGFloat viewAngle = (M_PI / 180) * (trueHeading - [self.routingDelegate getCorrectedHeading]);
-                    _userHeadingTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
+//                    _userHeadingTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
+                    _userLocationTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
                 }];
                 [CATransaction commit];
             }
@@ -3228,52 +3227,52 @@
     if (self.userLocation.location.horizontalAccuracy != oldLocation.horizontalAccuracy)
         ((RMCircle *)_accuracyCircleAnnotation.layer).radiusInMeters = self.userLocation.location.horizontalAccuracy;
 
-    if ( ! _trackingHaloAnnotation)
-    {
-        _trackingHaloAnnotation = [[RMAnnotation annotationWithMapView:self coordinate:self.userLocation.location.coordinate andTitle:nil] retain];
-        _trackingHaloAnnotation.annotationType = kRMTrackingHaloAnnotationTypeName;
-        _trackingHaloAnnotation.clusteringEnabled = NO;
-        _trackingHaloAnnotation.enabled = NO;
-
-        // create image marker
-        //
-        _trackingHaloAnnotation.layer = [[RMMarker alloc] initWithUIImage:[UIImage imageNamed:@"TrackingDotHalo.png"]];
-        _trackingHaloAnnotation.layer.zPosition = MAXFLOAT - 1; //-MAXFLOAT + 1;
-        _trackingHaloAnnotation.isUserLocationAnnotation = YES;
-
-        [CATransaction begin];
-        [CATransaction setAnimationDuration:2.5];
-        [CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
-
-        // scale out radially
-        //
-        CABasicAnimation *boundsAnimation = [CABasicAnimation animationWithKeyPath:@"transform"];
-        boundsAnimation.repeatCount = MAXFLOAT;
-        boundsAnimation.fromValue = [NSValue valueWithCATransform3D:CATransform3DMakeScale(0.1, 0.1, 1.0)];
-        boundsAnimation.toValue   = [NSValue valueWithCATransform3D:CATransform3DMakeScale(2.0, 2.0, 1.0)];
-        boundsAnimation.removedOnCompletion = NO;
-        boundsAnimation.fillMode = kCAFillModeForwards;
-
-        [_trackingHaloAnnotation.layer addAnimation:boundsAnimation forKey:@"animateScale"];
-
-        // go transparent as scaled out
-        //
-        CABasicAnimation *opacityAnimation = [CABasicAnimation animationWithKeyPath:@"opacity"];
-        opacityAnimation.repeatCount = MAXFLOAT;
-        opacityAnimation.fromValue = [NSNumber numberWithFloat:1.0];
-        opacityAnimation.toValue   = [NSNumber numberWithFloat:-1.0];
-        opacityAnimation.removedOnCompletion = NO;
-        opacityAnimation.fillMode = kCAFillModeForwards;
-
-        [_trackingHaloAnnotation.layer addAnimation:opacityAnimation forKey:@"animateOpacity"];
-
-        [CATransaction commit];
-
-        [self addAnnotation:_trackingHaloAnnotation];
-    }
-
-    if ([loc distanceFromLocation:oldLocation])
-        _trackingHaloAnnotation.coordinate = self.userLocation.location.coordinate;
+//    if ( ! _trackingHaloAnnotation)
+//    {
+//        _trackingHaloAnnotation = [[RMAnnotation annotationWithMapView:self coordinate:self.userLocation.location.coordinate andTitle:nil] retain];
+//        _trackingHaloAnnotation.annotationType = kRMTrackingHaloAnnotationTypeName;
+//        _trackingHaloAnnotation.clusteringEnabled = NO;
+//        _trackingHaloAnnotation.enabled = NO;
+//
+//        // create image marker
+//        //
+//        _trackingHaloAnnotation.layer = [[RMMarker alloc] initWithUIImage:[UIImage imageNamed:@"TrackingDotHalo.png"]];
+//        _trackingHaloAnnotation.layer.zPosition = MAXFLOAT - 1; //-MAXFLOAT + 1;
+//        _trackingHaloAnnotation.isUserLocationAnnotation = YES;
+//
+//        [CATransaction begin];
+//        [CATransaction setAnimationDuration:2.5];
+//        [CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
+//
+//        // scale out radially
+//        //
+//        CABasicAnimation *boundsAnimation = [CABasicAnimation animationWithKeyPath:@"transform"];
+//        boundsAnimation.repeatCount = MAXFLOAT;
+//        boundsAnimation.fromValue = [NSValue valueWithCATransform3D:CATransform3DMakeScale(0.1, 0.1, 1.0)];
+//        boundsAnimation.toValue   = [NSValue valueWithCATransform3D:CATransform3DMakeScale(2.0, 2.0, 1.0)];
+//        boundsAnimation.removedOnCompletion = NO;
+//        boundsAnimation.fillMode = kCAFillModeForwards;
+//
+//        [_trackingHaloAnnotation.layer addAnimation:boundsAnimation forKey:@"animateScale"];
+//
+//        // go transparent as scaled out
+//        //
+//        CABasicAnimation *opacityAnimation = [CABasicAnimation animationWithKeyPath:@"opacity"];
+//        opacityAnimation.repeatCount = MAXFLOAT;
+//        opacityAnimation.fromValue = [NSNumber numberWithFloat:1.0];
+//        opacityAnimation.toValue   = [NSNumber numberWithFloat:-1.0];
+//        opacityAnimation.removedOnCompletion = NO;
+//        opacityAnimation.fillMode = kCAFillModeForwards;
+//
+//        [_trackingHaloAnnotation.layer addAnimation:opacityAnimation forKey:@"animateOpacity"];
+//
+//        [CATransaction commit];
+//
+//        [self addAnnotation:_trackingHaloAnnotation];
+//    }
+//
+//    if ([loc distanceFromLocation:oldLocation])
+//        _trackingHaloAnnotation.coordinate = self.userLocation.location.coordinate;
 
     self.userLocation.layer.hidden = ( ! CLLocationCoordinate2DIsValid(self.userLocation.coordinate) || self.userTrackingMode == RMUserTrackingModeFollowWithHeading);
 
@@ -3282,10 +3281,10 @@
 
     _accuracyCircleAnnotation.layer.hidden = self.userLocation.location.horizontalAccuracy <= 10;
 
-    _trackingHaloAnnotation.layer.hidden = ( ! CLLocationCoordinate2DIsValid(self.userLocation.coordinate) || self.userLocation.location.horizontalAccuracy > 10 || self.userTrackingMode == RMUserTrackingModeFollowWithHeading);
+//    _trackingHaloAnnotation.layer.hidden = ( ! CLLocationCoordinate2DIsValid(self.userLocation.coordinate) || self.userLocation.location.horizontalAccuracy > 10 || self.userTrackingMode == RMUserTrackingModeFollowWithHeading);
 
-    if (_userHaloTrackingView)
-        _userHaloTrackingView.hidden = ( ! CLLocationCoordinate2DIsValid(self.userLocation.coordinate) || self.userLocation.location.horizontalAccuracy > 10);
+//    if (_userHaloTrackingView)
+//        _userHaloTrackingView.hidden = ( ! CLLocationCoordinate2DIsValid(self.userLocation.coordinate) || self.userLocation.location.horizontalAccuracy > 10);
 
     if ( ! [_annotations containsObject:self.userLocation])
         [self addAnnotation:self.userLocation];
@@ -3305,7 +3304,8 @@
     CGFloat trueHeading = self.userLocation.heading.trueHeading;
     CGFloat viewAngle = (M_PI / 180) * (trueHeading - [self.routingDelegate getCorrectedHeading]);
     RMLog(@"Did update heading: True heading: %f Corrected heading: %f", trueHeading, [self.routingDelegate getCorrectedHeading]);
-    _userHeadingTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
+    _userLocationTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
+//    _userHeadingTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
 }
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
@@ -3324,9 +3324,9 @@
 
     if (/*newHeading.trueHeading != 0 &&*/ self.userTrackingMode == RMUserTrackingModeFollowWithHeading)
    {
-        if (_userHeadingTrackingView.alpha < 1.0) {
-            [UIView animateWithDuration:0.5 animations:^(void) { _userHeadingTrackingView.alpha = 1.0; }];
-        }
+//        if (_userHeadingTrackingView.alpha < 1.0) {
+//            [UIView animateWithDuration:0.5 animations:^(void) { _userHeadingTrackingView.alpha = 1.0; }];
+//        }
 
 //        [CATransaction begin];
 //        [CATransaction setAnimationDuration:0.1];
@@ -3341,7 +3341,8 @@
                                  CGFloat trueHeading = self.userLocation.heading.trueHeading;
                                  CGFloat viewAngle = (M_PI / 180) * (trueHeading - [self.routingDelegate getCorrectedHeading]);
                                  RMLog(@"Did update heading: True heading: %f Corrected heading: %f", trueHeading, [self.routingDelegate getCorrectedHeading]);
-                                 _userHeadingTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
+//                                 _userHeadingTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
+                                 _userLocationTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
                              } else {
                                  CGFloat angle = (M_PI / -180) * self.userLocation.heading.trueHeading;
                                  _mapTransform = CGAffineTransformMakeRotation(angle);
