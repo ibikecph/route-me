@@ -3092,7 +3092,7 @@
         return;
 
 //    NSLog(@"%@", loc);
-    
+
     if ( ! _showsUserLocation || _mapScrollView.isDragging || ! loc || ! CLLocationCoordinate2DIsValid(loc.coordinate))
         return;
     
@@ -3103,10 +3103,13 @@
         if (_delegateHasDidUpdateUserLocation) {
             [_delegate mapView:self didUpdateUserLocation:self.userLocation];
         }
+
+        if (self.routingDelegate && [self.routingDelegate respondsToSelector:@selector(getCorrectedPosition)]) {
+            self.userLocation.location = [self.routingDelegate getCorrectedPosition];
+        }
         
-//        if (self.routingDelegate && [self.routingDelegate respondsToSelector:@selector(getCorrectedPosition)]) {
-//            self.userLocation.location = [self.routingDelegate getCorrectedPosition];
-//        }        
+
+        
     } else {
         /**
          * old location is the same as new location
