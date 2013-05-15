@@ -83,7 +83,7 @@
     previousBounds = CGRectZero;
     lastScale = 0.0;
 
-    self.masksToBounds = YES;
+//    self.masksToBounds = YES;
 
     scaleLineWidth = NO;
     scaleLineDash = NO;
@@ -182,7 +182,14 @@
     // Clip bound rect to screen bounds.
     // If bounds are not clipped, they won't display when you zoom in too much.
 
-    CGRect screenBounds = [mapView bounds];
+//    CGRect screenBounds = [mapView bounds];
+    /**
+     * if the map keeps rotating sometimes the route will not be clipped as it should, so we make a clipping area bigger
+     */
+    CGFloat width = MAX(mapView.bounds.size.width, mapView.bounds.size.height) * 1.41;
+    CGFloat x = roundf(mapView.bounds.origin.x - ((width - mapView.bounds.size.width) / 2.0f));
+    CGFloat y = roundf(mapView.bounds.origin.y - ((width - mapView.bounds.size.height) / 2.0f));
+    CGRect screenBounds = CGRectMake(x, y, width, width);
 
     // we start with the non-clipped bounds and clip them
     CGRect clippedBounds = nonClippedBounds;
