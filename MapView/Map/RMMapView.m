@@ -3017,8 +3017,11 @@
                 } completion:^(BOOL finished) {
                     CGFloat trueHeading = self.userLocation.heading.trueHeading;
                     CGFloat viewAngle = (M_PI / 180) * (trueHeading - [self.routingDelegate getCorrectedHeading]);
-//                    _userLocationTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
-                    _userLocationTrackingView.transform = CGAffineTransformMakeRotation(0);
+                    if (self.routingDelegate && [self.routingDelegate respondsToSelector:@selector(isOnPath)] && [self.routingDelegate isOnPath]) {
+                        _userLocationTrackingView.transform = CGAffineTransformMakeRotation(0);
+                    } else {
+                        _userLocationTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
+                    }
 
                     //                    _userHeadingTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
                 }];
@@ -3141,10 +3144,11 @@
             if (CGAffineTransformEqualToTransform(_mapTransform, CGAffineTransformMakeRotation(angle)) == NO) {
                 _mapTransform = CGAffineTransformMakeRotation(angle);
 //                _userHeadingTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
-
-                
-//                _userLocationTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);                
-                _userLocationTrackingView.transform = CGAffineTransformMakeRotation(0);
+                if (self.routingDelegate && [self.routingDelegate respondsToSelector:@selector(isOnPath)] && [self.routingDelegate isOnPath]) {
+                    _userLocationTrackingView.transform = CGAffineTransformMakeRotation(0);
+                } else {
+                    _userLocationTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
+                }
                 _annotationTransform = CATransform3DMakeAffineTransform(CGAffineTransformMakeRotation(-angle));
                 [CATransaction begin];
                 [CATransaction setAnimationDuration:0.5];
@@ -3161,7 +3165,11 @@
                     CGFloat trueHeading = self.userLocation.heading.trueHeading;
                     CGFloat viewAngle = (M_PI / 180) * (trueHeading - [self.routingDelegate getCorrectedHeading]);
 //                    _userHeadingTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
-                    _userLocationTrackingView.transform = CGAffineTransformMakeRotation(0);
+                    if (self.routingDelegate && [self.routingDelegate respondsToSelector:@selector(isOnPath)] && [self.routingDelegate isOnPath]) {
+                        _userLocationTrackingView.transform = CGAffineTransformMakeRotation(0);
+                    } else {
+                        _userLocationTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
+                    }
 //                    _userLocationTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
                 }];
                 [CATransaction commit];
@@ -3313,6 +3321,11 @@
     CGFloat trueHeading = self.userLocation.heading.trueHeading;
     CGFloat viewAngle = (M_PI / 180) * (trueHeading - [self.routingDelegate getCorrectedHeading]);
     RMLog(@"Did update heading: True heading: %f Corrected heading: %f", trueHeading, [self.routingDelegate getCorrectedHeading]);
+    if (self.routingDelegate && [self.routingDelegate respondsToSelector:@selector(isOnPath)] && [self.routingDelegate isOnPath]) {
+        _userLocationTrackingView.transform = CGAffineTransformMakeRotation(0);
+    } else {
+        _userLocationTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
+    }
 //    _userLocationTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
 
     //    _userHeadingTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
@@ -3351,6 +3364,11 @@
                                  CGFloat trueHeading = self.userLocation.heading.trueHeading;
                                  CGFloat viewAngle = (M_PI / 180) * (trueHeading - [self.routingDelegate getCorrectedHeading]);
                                  RMLog(@"Did update heading: True heading: %f Corrected heading: %f", trueHeading, [self.routingDelegate getCorrectedHeading]);
+                                 if (self.routingDelegate && [self.routingDelegate respondsToSelector:@selector(isOnPath)] && [self.routingDelegate isOnPath]) {
+                                     _userLocationTrackingView.transform = CGAffineTransformMakeRotation(0);
+                                 } else {
+                                     _userLocationTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
+                                 }
 //                                 _userHeadingTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
 
 //                                 _userLocationTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);

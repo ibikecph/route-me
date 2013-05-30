@@ -57,6 +57,7 @@
 @protocol RouteDelegate <NSObject>
 - (CLLocation*)getCorrectedPosition;
 - (double)getCorrectedHeading;
+- (BOOL)isOnPath;
 @end
 
 // constants for boundingMask
