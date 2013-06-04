@@ -3220,30 +3220,33 @@
     }
     
     
-    if ( ! _accuracyCircleAnnotation)
-    {
-        _accuracyCircleAnnotation = [[RMAnnotation annotationWithMapView:self coordinate:self.userLocation.location.coordinate andTitle:nil] retain];
-        _accuracyCircleAnnotation.annotationType = kRMAccuracyCircleAnnotationTypeName;
-        _accuracyCircleAnnotation.clusteringEnabled = NO;
-        _accuracyCircleAnnotation.enabled = NO;
-        _accuracyCircleAnnotation.layer = [[RMCircle alloc] initWithView:self radiusInMeters:self.userLocation.location.horizontalAccuracy];
-        _accuracyCircleAnnotation.layer.zPosition = MAXFLOAT - 2; // was -MAXFLOAT
-        _accuracyCircleAnnotation.isUserLocationAnnotation = YES;
+//    if ( ! _accuracyCircleAnnotation)
+//    {
+//        _accuracyCircleAnnotation = [[RMAnnotation annotationWithMapView:self coordinate:self.userLocation.location.coordinate andTitle:nil] retain];
+//        _accuracyCircleAnnotation.annotationType = kRMAccuracyCircleAnnotationTypeName;
+//        _accuracyCircleAnnotation.clusteringEnabled = NO;
+//        _accuracyCircleAnnotation.enabled = NO;
+//        _accuracyCircleAnnotation.layer = [[RMCircle alloc] initWithView:self radiusInMeters:self.userLocation.location.horizontalAccuracy];
+//        _accuracyCircleAnnotation.layer.zPosition = MAXFLOAT - 2; // was -MAXFLOAT
+//        _accuracyCircleAnnotation.isUserLocationAnnotation = YES;
+//
+//        ((RMCircle *)_accuracyCircleAnnotation.layer).lineColor = [UIColor colorWithRed:0.378 green:0.552 blue:0.827 alpha:0.7];
+//        ((RMCircle *)_accuracyCircleAnnotation.layer).fillColor = [UIColor colorWithRed:0.378 green:0.552 blue:0.827 alpha:0.15];
+//
+//        ((RMCircle *)_accuracyCircleAnnotation.layer).lineWidthInPixels = 2.0;
+//
+//        [self addAnnotation:_accuracyCircleAnnotation];
+//    }
+//
+//    if ([self.userLocation.location distanceFromLocation:oldLocation])
+//        _accuracyCircleAnnotation.coordinate = self.userLocation.location.coordinate;
+//
+//    if (self.userLocation.location.horizontalAccuracy != oldLocation.horizontalAccuracy)
+//        ((RMCircle *)_accuracyCircleAnnotation.layer).radiusInMeters = self.userLocation.location.horizontalAccuracy;
 
-        ((RMCircle *)_accuracyCircleAnnotation.layer).lineColor = [UIColor colorWithRed:0.378 green:0.552 blue:0.827 alpha:0.7];
-        ((RMCircle *)_accuracyCircleAnnotation.layer).fillColor = [UIColor colorWithRed:0.378 green:0.552 blue:0.827 alpha:0.15];
-
-        ((RMCircle *)_accuracyCircleAnnotation.layer).lineWidthInPixels = 2.0;
-
-        [self addAnnotation:_accuracyCircleAnnotation];
-    }
-
-    if ([self.userLocation.location distanceFromLocation:oldLocation])
-        _accuracyCircleAnnotation.coordinate = self.userLocation.location.coordinate;
-
-    if (self.userLocation.location.horizontalAccuracy != oldLocation.horizontalAccuracy)
-        ((RMCircle *)_accuracyCircleAnnotation.layer).radiusInMeters = self.userLocation.location.horizontalAccuracy;
-
+    
+    
+    
 //    if ( ! _trackingHaloAnnotation)
 //    {
 //        _trackingHaloAnnotation = [[RMAnnotation annotationWithMapView:self coordinate:self.userLocation.location.coordinate andTitle:nil] retain];
@@ -3296,7 +3299,7 @@
     if (_userLocationTrackingView)
         _userLocationTrackingView.hidden = ! CLLocationCoordinate2DIsValid(self.userLocation.coordinate);
 
-    _accuracyCircleAnnotation.layer.hidden = self.userLocation.location.horizontalAccuracy <= 10;
+//    _accuracyCircleAnnotation.layer.hidden = self.userLocation.location.horizontalAccuracy <= 10;
 
 //    _trackingHaloAnnotation.layer.hidden = ( ! CLLocationCoordinate2DIsValid(self.userLocation.coordinate) || self.userLocation.location.horizontalAccuracy > 10 || self.userTrackingMode == RMUserTrackingModeFollowWithHeading);
 
