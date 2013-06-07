@@ -164,6 +164,7 @@
     BOOL _enableDragging, _enableBouncing;
 
     CGPoint _lastDraggingTranslation;
+    CGFloat _lastPinch;
     RMAnnotation *_draggedAnnotation;
 
     CLLocationManager *_locationManager;
@@ -384,14 +385,9 @@
         RMProjectedPoint centerPoint = self.centerProjectedPoint;
 
         CGRect bounds = CGRectMake(0, 0, frame.size.width, frame.size.height);
+        _overlayView.frame = bounds;
         _backgroundView.frame = bounds;
         _mapScrollView.frame = bounds;
-//        CGFloat wh = MAX(bounds.size.width, bounds.size.height);
-//        bounds.origin.x = floorf((wh-bounds.size.width)/2.0f);
-//        bounds.origin.y = floorf((wh-bounds.size.height)/2.0f);
-//        bounds.size.width = wh;
-//        bounds.size.height = wh;
-        _overlayView.frame = bounds;
 
         [self setCenterProjectedPoint:centerPoint animated:NO];
 
@@ -1105,6 +1101,7 @@
     int tileSideLength = [_tileSourcesContainer tileSideLength];
     CGSize contentSize = CGSizeMake(tileSideLength, tileSideLength); // zoom level 1
 
+    
     _mapScrollView = [[RMMapScrollView alloc] initWithFrame:[self bounds]];
     _mapScrollView.delegate = self;
     _mapScrollView.opaque = NO;
@@ -1181,7 +1178,7 @@
     twoFingerSingleTapRecognizer.delegate = self;
 
     [self addGestureRecognizer:twoFingerSingleTapRecognizer];
-
+    
     // pan
     UIPanGestureRecognizer *panGestureRecognizer = [[[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGesture:)] autorelease];
     panGestureRecognizer.minimumNumberOfTouches = 1;
@@ -1193,8 +1190,20 @@
 
     // the pan recognizer is added to the scrollview as it competes with the
     // pan recognizer of the scrollview
-    [_mapScrollView addGestureRecognizer:panGestureRecognizer];
+//    [_mapScrollView addGestureRecognizer:panGestureRecognizer];
+    _mapScrollView.userInteractionEnabled = NO;
+    
+    UIView * v = [[UIView alloc] initWithFrame:[self bounds]];
+    [v setUserInteractionEnabled:YES];
+    [v addGestureRecognizer:panGestureRecognizer];
+    [self addSubview:v];
 
+    UIPinchGestureRecognizer *pinchGestureRecognizer = [[[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(handlePinch:)] autorelease];
+    pinchGestureRecognizer.delegate = self;
+    [v addGestureRecognizer:pinchGestureRecognizer];
+
+    
+    
     [_visibleAnnotations removeAllObjects];
     [self correctPositionOfAllAnnotations];
 }
@@ -1566,6 +1575,7 @@
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)recognizer
 {
     RMLog(@"Should begin...");
+    return YES;
     if ([recognizer isKindOfClass:[UIPanGestureRecognizer class]])
     {
         RMLog(@"Should we start?");
@@ -1605,17 +1615,21 @@
 {
     if (recognizer.state == UIGestureRecognizerStateBegan)
     {
-        CALayer *hit = [_overlayView.layer hitTest:[recognizer locationInView:self]];
-
-        if ( ! hit)
-            return;
-
-        if ([hit respondsToSelector:@selector(enableDragging)] && ![(RMMarker *)hit enableDragging])
-            return;
-
+//        CALayer *hit = [_overlayView.layer hitTest:[recognizer locationInView:self]];
+//
+//        if ( ! hit)
+//            return;
+//
+//        if ([hit respondsToSelector:@selector(enableDragging)] && ![(RMMarker *)hit enableDragging])
+//            return;
+//
         _lastDraggingTranslation = CGPointZero;
-        [_draggedAnnotation release];
-        _draggedAnnotation = [[self findAnnotationInLayer:hit] retain];
+//        [_draggedAnnotation release];
+//        _draggedAnnotation = [[self findAnnotationInLayer:hit] retain];
+        
+        [self registerMoveEventByUser:YES];
+        if (self.userTrackingMode != RMUserTrackingModeNone)
+            self.userTrackingMode = RMUserTrackingModeNone;
     }
 
     if (recognizer.state == UIGestureRecognizerStateChanged)
@@ -1624,17 +1638,36 @@
         CGPoint delta = CGPointMake(_lastDraggingTranslation.x - translation.x, _lastDraggingTranslation.y - translation.y);
         _lastDraggingTranslation = translation;
 
-        [CATransaction begin];
-        [CATransaction setAnimationDuration:0];
-        [self didDragAnnotation:_draggedAnnotation withDelta:delta];
-        [CATransaction commit];
+        CGPoint x = _mapScrollView.contentOffset;
+        x.x += delta.x;
+        x.y += delta.y;
+        [_mapScrollView setContentOffset:x];
+        [self correctPositionOfAllAnnotations];
+//        [CATransaction begin];
+//        [CATransaction setAnimationDuration:0];
+//        [self didDragAnnotation:_draggedAnnotation withDelta:delta];
+//        [CATransaction commit];
     }
     else if (recognizer.state == UIGestureRecognizerStateEnded)
     {
-        [self didEndDragAnnotation:_draggedAnnotation];
-        [_draggedAnnotation release]; _draggedAnnotation = nil;
+//        [self didEndDragAnnotation:_draggedAnnotation];
+//        [_draggedAnnotation release]; _draggedAnnotation = nil;
     }
 }
+
+- (void)handlePinch:(UIPinchGestureRecognizer *)recognizer {
+    if (recognizer.state == UIGestureRecognizerStateBegan) {
+        _lastPinch = _mapScrollView.zoomScale;
+    } if (recognizer.state == UIGestureRecognizerStateChanged) {
+        [_mapScrollView setZoomScale:MIN(_mapScrollView.maximumZoomScale, _lastPinch*recognizer.scale)];
+        [self scrollViewDidZoom:_mapScrollView];
+//        [self correctPositionOfAllAnnotations];
+    } else if (recognizer.state == UIGestureRecognizerStateEnded) {
+        [self scrollViewDidEndZooming:_mapScrollView withView:[self viewForZoomingInScrollView:_mapScrollView] atScale:_lastPinch*recognizer.scale];
+    }
+}
+
+
 
 // Overlay
 
@@ -3021,8 +3054,16 @@
                     _mapTransform = CGAffineTransformMakeRotation(angle);
                     _annotationTransform = CATransform3DMakeAffineTransform(CGAffineTransformMakeRotation(-angle));
                     
+//                    CGRect frame = _mapScrollView.frame;
+//                    frame.size.width = 800.0f;
+//                    frame.size.height = 800.0f;
+//                    _mapScrollView.bounds = frame;
+                    
+                    RMLog(@"%@", _mapScrollView);
                     _mapScrollView.transform = _mapTransform;
+//                    self.transform = _mapTransform;
                     _overlayView.transform   = _mapTransform;
+                    RMLog(@"%@", _mapScrollView);
                     
                     for (RMAnnotation *annotation in _annotations)
                         if ([annotation.layer isKindOfClass:[RMMarker class]] && ! annotation.isUserLocationAnnotation)
