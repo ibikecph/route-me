@@ -1608,7 +1608,7 @@
 }
 
 -(BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
-    return YES;
+    return NO;
 }
 
 - (void)handlePanGesture:(UIPanGestureRecognizer *)recognizer
@@ -1657,13 +1657,12 @@
 
 - (void)handlePinch:(UIPinchGestureRecognizer *)recognizer {
     if (recognizer.state == UIGestureRecognizerStateBegan) {
+        [self registerZoomEventByUser:YES];
         _lastPinch = _mapScrollView.zoomScale;
     } if (recognizer.state == UIGestureRecognizerStateChanged) {
-        [_mapScrollView setZoomScale:MIN(_mapScrollView.maximumZoomScale, _lastPinch*recognizer.scale)];
-        [self scrollViewDidZoom:_mapScrollView];
-//        [self correctPositionOfAllAnnotations];
+        [_mapScrollView setZoomScale:MIN(_mapScrollView.maximumZoomScale, _lastPinch*recognizer.scale) animated:NO];
+        [self correctPositionOfAllAnnotations];
     } else if (recognizer.state == UIGestureRecognizerStateEnded) {
-        [self scrollViewDidEndZooming:_mapScrollView withView:[self viewForZoomingInScrollView:_mapScrollView] atScale:_lastPinch*recognizer.scale];
     }
 }
 
