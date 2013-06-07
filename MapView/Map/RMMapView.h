@@ -498,6 +498,11 @@ typedef enum : NSUInteger {
 *   @param animated Whether changes to the map center or rotation should be animated when the mode is changed. */
 - (void)setUserTrackingMode:(RMUserTrackingMode)mode animated:(BOOL)animated;
 
+/**
+ * rotate map without user location changing
+ */
+- (void)rotateMap:(double)newHeading;
+
 @property (nonatomic, assign) id<RouteDelegate> routingDelegate;
 
 @end

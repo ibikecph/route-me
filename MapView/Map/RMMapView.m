@@ -386,6 +386,11 @@
         CGRect bounds = CGRectMake(0, 0, frame.size.width, frame.size.height);
         _backgroundView.frame = bounds;
         _mapScrollView.frame = bounds;
+//        CGFloat wh = MAX(bounds.size.width, bounds.size.height);
+//        bounds.origin.x = floorf((wh-bounds.size.width)/2.0f);
+//        bounds.origin.y = floorf((wh-bounds.size.height)/2.0f);
+//        bounds.size.width = wh;
+//        bounds.size.height = wh;
         _overlayView.frame = bounds;
 
         [self setCenterProjectedPoint:centerPoint animated:NO];
@@ -1115,7 +1120,7 @@
     _mapScrollView.maximumZoomScale = exp2f([self maxZoom]);
     _mapScrollView.contentOffset = CGPointMake(0.0, 0.0);
     _mapScrollView.clipsToBounds = NO;
-
+    
     _tiledLayersSuperview = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, contentSize.width, contentSize.height)];
     _tiledLayersSuperview.userInteractionEnabled = NO;
 
@@ -1560,11 +1565,13 @@
 // defines when the additional pan gesture recognizer on the scroll should handle the gesture
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)recognizer
 {
+    RMLog(@"Should begin...");
     if ([recognizer isKindOfClass:[UIPanGestureRecognizer class]])
     {
+        RMLog(@"Should we start?");
         // check whether our custom pan gesture recognizer should start recognizing the gesture
         CALayer *hit = [_overlayView overlayHitTest:[recognizer locationInView:_overlayView]];
-
+        
         if ([hit isEqual:_overlayView.layer])
             return NO;
         
@@ -1575,14 +1582,22 @@
             return NO;
     }
 
+    RMLog(@"Gesture begin!");
     return YES;
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
 {
-    if ([touch.view isKindOfClass:[UIControl class]])
-        return NO;
+    if ([touch.view isKindOfClass:[UIControl class]]) {
+        RMLog(@"Shouldn't receive touch!");
+        return NO;        
+    }
 
+    RMLog(@"Should receive touch %@", gestureRecognizer);
+    return YES;
+}
+
+-(BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
     return YES;
 }
 
@@ -3334,6 +3349,44 @@
     //    _userHeadingTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
 }
 
+- (void)rotateArrow:(double)newHeading {
+    CGFloat trueHeading = self.userLocation.heading.trueHeading;
+    CGFloat viewAngle = (M_PI / 180) * (trueHeading - newHeading);
+    if (self.routingDelegate && [self.routingDelegate respondsToSelector:@selector(isOnPath)] && [self.routingDelegate isOnPath]) {
+        _userLocationTrackingView.transform = CGAffineTransformMakeRotation(0);
+    } else {
+        _userLocationTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
+    }
+}
+
+- (void)rotateMap:(double)newHeading {
+    CGFloat angle = (M_PI / -180) * newHeading;
+    CGFloat trueHeading = self.userLocation.heading.trueHeading;
+    CGFloat viewAngle = (M_PI / 180) * trueHeading + angle;
+    if (CGAffineTransformEqualToTransform(_mapTransform, CGAffineTransformMakeRotation(angle)) == NO) {
+        _mapTransform = CGAffineTransformMakeRotation(angle);
+        _userLocationTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
+        _annotationTransform = CATransform3DMakeAffineTransform(CGAffineTransformMakeRotation(-angle));
+        [CATransaction begin];
+        [CATransaction setAnimationDuration:0.5];
+        [CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
+        [UIView animateWithDuration:0.5 delay:0.0 options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationCurveEaseInOut animations:^(void) {
+            NSLog(@"True heading: %f Corrected heading: %f", trueHeading, newHeading);
+            _mapScrollView.transform = _mapTransform;
+            _overlayView.transform   = _mapTransform;
+            for (RMAnnotation *annotation in _annotations)
+                if ([annotation.layer isKindOfClass:[RMMarker class]] && ! annotation.isUserLocationAnnotation)
+                    annotation.layer.transform = _annotationTransform;
+            [self correctPositionOfAllAnnotations];
+        } completion:^(BOOL finished) {
+            CGFloat trueHeading = self.userLocation.heading.trueHeading;
+            CGFloat viewAngle = (M_PI / 180) * (trueHeading - newHeading);
+            _userLocationTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
+        }];
+        [CATransaction commit];
+    }
+}
+
 - (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
 
     RMLog(@"%@", newHeading);
@@ -3364,14 +3417,18 @@
 //                         {
 
                              if (self.routingDelegate && [self.routingDelegate respondsToSelector:@selector(getCorrectedHeading)]) {
-                                 CGFloat trueHeading = self.userLocation.heading.trueHeading;
-                                 CGFloat viewAngle = (M_PI / 180) * (trueHeading - [self.routingDelegate getCorrectedHeading]);
-                                 RMLog(@"Did update heading: True heading: %f Corrected heading: %f", trueHeading, [self.routingDelegate getCorrectedHeading]);
-                                 if (self.routingDelegate && [self.routingDelegate respondsToSelector:@selector(isOnPath)] && [self.routingDelegate isOnPath]) {
-                                     _userLocationTrackingView.transform = CGAffineTransformMakeRotation(0);
-                                 } else {
-                                     _userLocationTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
-                                 }
+                                 [self rotateMap:[self.routingDelegate getCorrectedHeading]];
+//                                 CGFloat trueHeading = self.userLocation.heading.trueHeading;
+//                                 CGFloat viewAngle = (M_PI / 180) * (trueHeading - [self.routingDelegate getCorrectedHeading]);
+//                                 RMLog(@"Did update heading: True heading: %f Corrected heading: %f", trueHeading, [self.routingDelegate getCorrectedHeading]);
+//                                 if (self.routingDelegate && [self.routingDelegate respondsToSelector:@selector(isOnPath)] && [self.routingDelegate isOnPath]) {
+//                                     _userLocationTrackingView.transform = CGAffineTransformMakeRotation(0);
+//                                 } else {
+//                                     _userLocationTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
+//                                 }
+
+                                 
+                                 
 //                                 _userHeadingTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
 
 //                                 _userLocationTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);

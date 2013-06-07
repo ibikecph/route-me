@@ -191,6 +191,7 @@
     CGFloat y = roundf(mapView.bounds.origin.y - ((width - mapView.bounds.size.height) / 2.0f));
     CGRect screenBounds = CGRectMake(x, y, width, width);
 
+
     // we start with the non-clipped bounds and clip them
     CGRect clippedBounds = nonClippedBounds;
 
