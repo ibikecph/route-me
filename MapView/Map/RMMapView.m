@@ -2800,8 +2800,8 @@
 #pragma mark -
 #pragma mark User Location
 
-#define CACHE_UPDATE_INTERVAL 5.0 // in seconds
-#define ACCURACY_GREAT 20.0 // location with accuracy better then this will be updated immediately
+#define CACHE_UPDATE_INTERVAL 2.0 // in seconds
+#define ACCURACY_GREAT 40.0 // location with accuracy better then this will be updated immediately
 #define ACCURACY_JUNK 1000.0 // location with accuracy worse then this will be discarded
 
 - (void)setShowsUserLocation:(BOOL)newShowsUserLocation
