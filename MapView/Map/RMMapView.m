@@ -3034,7 +3034,7 @@
 
             
             if (self.routingDelegate && [self.routingDelegate respondsToSelector:@selector(getCorrectedPosition)] && self.userTrackingMode == RMUserTrackingModeFollowWithHeading) {
-                                
+                
                 [CATransaction begin];
                 [CATransaction setAnimationDuration:0.5];
                 [CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
@@ -3053,16 +3053,8 @@
                     _mapTransform = CGAffineTransformMakeRotation(angle);
                     _annotationTransform = CATransform3DMakeAffineTransform(CGAffineTransformMakeRotation(-angle));
                     
-//                    CGRect frame = _mapScrollView.frame;
-//                    frame.size.width = 800.0f;
-//                    frame.size.height = 800.0f;
-//                    _mapScrollView.bounds = frame;
-                    
-                    RMLog(@"%@", _mapScrollView);
                     _mapScrollView.transform = _mapTransform;
-//                    self.transform = _mapTransform;
                     _overlayView.transform   = _mapTransform;
-                    RMLog(@"%@", _mapScrollView);
                     
                     for (RMAnnotation *annotation in _annotations)
                         if ([annotation.layer isKindOfClass:[RMMarker class]] && ! annotation.isUserLocationAnnotation)
@@ -3390,6 +3382,8 @@
 }
 
 - (void)rotateArrow:(double)newHeading {
+    RMLog(@"%f", newHeading);
+
     CGFloat trueHeading = self.userLocation.heading.trueHeading;
     CGFloat viewAngle = (M_PI / 180) * (trueHeading - newHeading);
     if (self.routingDelegate && [self.routingDelegate respondsToSelector:@selector(isOnPath)] && [self.routingDelegate isOnPath]) {
@@ -3428,9 +3422,6 @@
 }
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
-
-    RMLog(@"%@", newHeading);
-
     
     if ( ! _showsUserLocation || _mapScrollView.isDragging || newHeading.headingAccuracy < 0) {
         return;
@@ -3457,16 +3448,8 @@
 //                         {
 
                              if (self.routingDelegate && [self.routingDelegate respondsToSelector:@selector(getCorrectedHeading)]) {
-                                 [self rotateMap:[self.routingDelegate getCorrectedHeading]];
-//                                 CGFloat trueHeading = self.userLocation.heading.trueHeading;
-//                                 CGFloat viewAngle = (M_PI / 180) * (trueHeading - [self.routingDelegate getCorrectedHeading]);
-//                                 RMLog(@"Did update heading: True heading: %f Corrected heading: %f", trueHeading, [self.routingDelegate getCorrectedHeading]);
-//                                 if (self.routingDelegate && [self.routingDelegate respondsToSelector:@selector(isOnPath)] && [self.routingDelegate isOnPath]) {
-//                                     _userLocationTrackingView.transform = CGAffineTransformMakeRotation(0);
-//                                 } else {
-//                                     _userLocationTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
-//                                 }
-
+//                                 [self rotateMap:[self.routingDelegate getCorrectedHeading]];
+                                 [self updateHeading];
                                  
                                  
 //                                 _userHeadingTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
