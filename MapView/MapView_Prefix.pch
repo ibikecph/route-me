@@ -11,6 +11,7 @@
     #import "RMGlobalConstants.h"
 #endif
 
+
 #if DEBUG
 #define RMLog(args...) NSLog(@"%@", [NSString stringWithFormat: args])
 #define LogMethod() NSLog(@"logged method call: -[%@ %@] (line %d)", self, NSStringFromSelector(_cmd), __LINE__)
