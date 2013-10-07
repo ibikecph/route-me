@@ -28,6 +28,11 @@
 #import "RMMarker.h"
 #import "RMPixel.h"
 
+@interface RMMarker()
+@property int maxWidth;
+@property int maxHeight;
+@end
+
 @implementation RMMarker
 
 @synthesize label;
@@ -67,10 +72,13 @@
     self.contents = (id)[image CGImage];
     self.bounds = CGRectMake(0, 0, image.size.width, image.size.height);
     self.anchorPoint = _anchorPoint;
+    
+    self.maxWidth = image.size.width;
+    self.maxHeight = image.size.height;
 
     self.masksToBounds = NO;
     self.label = nil;
-
+    
     return self;
 }
 
@@ -87,6 +95,10 @@
 - (void)replaceUIImage:(UIImage *)image
 {
     [self replaceUIImage:image anchorPoint:defaultMarkerAnchorPoint];
+}
+
+- (void)updateBoundsWithZoom:(float)zoom {
+    self.bounds = CGRectMake(0, 0, MIN(self.maxWidth*zoom, self.maxWidth), MIN(self.maxHeight*zoom, self.maxHeight));
 }
 
 - (void)replaceUIImage:(UIImage *)image anchorPoint:(CGPoint)_anchorPoint
