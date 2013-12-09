@@ -63,6 +63,8 @@ typedef enum : short {
 @property (nonatomic, readonly) NSArray *enclosedAnnotations;
 @property (nonatomic, readonly) NSArray *unclusteredAnnotations;
 
+- (void)annotationDidChangeBoundingBox:(RMAnnotation *)annotation;
+
 @end
 
 #pragma mark - RMQuadTree
@@ -84,5 +86,6 @@ typedef enum : short {
                withProjectedClusterSize:(RMProjectedSize)clusterSize
           andProjectedClusterMarkerSize:(RMProjectedSize)clusterMarkerSize
                       findGravityCenter:(BOOL)findGravityCenter;
+
 
 @end
