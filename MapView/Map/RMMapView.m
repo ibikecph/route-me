@@ -2715,9 +2715,8 @@
 
 - (void)addAnnotation:(RMAnnotation *)annotation
 {
-    // TODO: Fix why annotation might be nil
     if (!annotation) {
-        NSLog(@"NO ANNOTATION OBJECT!!");
+        NSLog(@"No annotation object");
         return;
     }
     
