@@ -374,6 +374,12 @@
     return self;
 }
 
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    
+    [self updateLayout];
+}
+
 - (void)setFrame:(CGRect)frame
 {
     CGRect r = self.frame;
@@ -382,17 +388,7 @@
     // only change if the frame changes and not during initialization
     if ( ! CGRectEqualToRect(r, frame))
     {
-        RMProjectedPoint centerPoint = self.centerProjectedPoint;
-
-        CGRect bounds = CGRectMake(0, 0, frame.size.width, frame.size.height);
-        _overlayView.frame = bounds;
-        _backgroundView.frame = bounds;
-        _mapScrollView.frame = bounds;
-
-        [self setCenterProjectedPoint:centerPoint animated:NO];
-
-        [self correctPositionOfAllAnnotations];
-        [self correctMinZoomScaleForBoundingMask];
+        [self updateLayout];
     }
 }
 
@@ -464,6 +460,24 @@
 
 	return [NSString stringWithFormat:@"MapView at {%.0f,%.0f}-{%.0fx%.0f}", bounds.origin.x, bounds.origin.y, bounds.size.width, bounds.size.height];
 }
+
+
+#pragma mark - 
+
+- (void)updateLayout {
+    RMProjectedPoint centerPoint = self.centerProjectedPoint;
+    
+    CGRect bounds = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
+    _overlayView.frame = bounds;
+    _backgroundView.frame = bounds;
+    _mapScrollView.frame = bounds;
+    
+    [self setCenterProjectedPoint:centerPoint animated:NO];
+    
+    [self correctPositionOfAllAnnotations];
+    [self correctMinZoomScaleForBoundingMask];
+}
+
 
 #pragma mark -
 #pragma mark Delegate
@@ -1188,20 +1202,15 @@
     // recognizer or by the pan gesture recognizer of the scrollview
     panGestureRecognizer.delegate = self;
 
-    // the pan recognizer is added to the scrollview as it competes with the
-    // pan recognizer of the scrollview
-//    [_mapScrollView addGestureRecognizer:panGestureRecognizer];
     _mapScrollView.userInteractionEnabled = NO;
     
-    UIView * v = [[UIView alloc] initWithFrame:[self bounds]];
-    [v setUserInteractionEnabled:YES];
-    [v addGestureRecognizer:panGestureRecognizer];
-    [self addSubview:v];
 
     UIPinchGestureRecognizer *pinchGestureRecognizer = [[[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(handlePinch:)] autorelease];
     pinchGestureRecognizer.delegate = self;
-    [v addGestureRecognizer:pinchGestureRecognizer];
+//    [v addGestureRecognizer:pinchGestureRecognizer];
 
+    [self addGestureRecognizer:panGestureRecognizer];
+    [self addGestureRecognizer:pinchGestureRecognizer];
     
     
     [_visibleAnnotations removeAllObjects];
