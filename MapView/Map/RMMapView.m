@@ -2941,8 +2941,6 @@
             if (_userLocationTrackingView || _userHeadingTrackingView || _userHaloTrackingView)
             {
                 [_userLocationTrackingView removeFromSuperview]; _userLocationTrackingView = nil;
-//                [_userHeadingTrackingView removeFromSuperview]; _userHeadingTrackingView = nil;
-//                [_userHaloTrackingView removeFromSuperview]; _userHaloTrackingView = nil;
             }
             
             self.userLocation.layer.hidden = NO;
@@ -2959,8 +2957,6 @@
             if (_userLocationTrackingView || _userHeadingTrackingView || _userHaloTrackingView)
             {
                 [_userLocationTrackingView removeFromSuperview]; _userLocationTrackingView = nil;
-//                [_userHeadingTrackingView removeFromSuperview]; _userHeadingTrackingView = nil;
-//                [_userHaloTrackingView removeFromSuperview]; _userHaloTrackingView = nil;
             }
             
             [CATransaction setAnimationDuration:0.5];
@@ -2994,40 +2990,6 @@
             self.showsUserLocation = YES;
 
             self.userLocation.layer.hidden = YES;
-            
-//            _userHaloTrackingView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"TrackingDotHalo"]];
-//            
-//            _userHaloTrackingView.center = CGPointMake(round([self bounds].size.width  / 2),
-//                                                       round([self bounds].size.height / 2));
-//            
-//            _userHaloTrackingView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin  |
-//            UIViewAutoresizingFlexibleRightMargin |
-//            UIViewAutoresizingFlexibleTopMargin   |
-//            UIViewAutoresizingFlexibleBottomMargin;
-//            
-//            for (NSString *animationKey in _trackingHaloAnnotation.layer.animationKeys)
-//                [_userHaloTrackingView.layer addAnimation:[[[_trackingHaloAnnotation.layer animationForKey:animationKey] copy] autorelease] forKey:animationKey];
-//            
-//            [self insertSubview:_userHaloTrackingView aboveSubview:_overlayView]; //changed to make the usertracking appear over the map. was below
-            
-//            _userHeadingTrackingView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"HeadingAngleSmall.png"]];
-//            
-//            _userHeadingTrackingView.frame = CGRectMake((self.bounds.size.width  / 2) - (_userHeadingTrackingView.bounds.size.width / 2),
-//                                                        (self.bounds.size.height / 2) - _userHeadingTrackingView.bounds.size.height,
-//                                                        _userHeadingTrackingView.bounds.size.width,
-//                                                        _userHeadingTrackingView.bounds.size.height * 2);
-//            
-//            _userHeadingTrackingView.contentMode = UIViewContentModeTop;
-//            
-//            _userHeadingTrackingView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin  |
-//            UIViewAutoresizingFlexibleRightMargin |
-//            UIViewAutoresizingFlexibleTopMargin   |
-//            UIViewAutoresizingFlexibleBottomMargin;
-//            
-//            _userHeadingTrackingView.alpha = 1.0;
-//            
-//            [self insertSubview:_userHeadingTrackingView aboveSubview:_overlayView]; //changed to make the usertracking appear over the map.  was below
-
 
             _userLocationTrackingView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"arrow_position.png"]];
             
@@ -3110,10 +3072,7 @@
 // Filter best locations
 // Returns nil if location should not be processed further
 - (CLLocation *)smoothLocation:(CLLocation *)newLocation {
-    
-//    CLLocation * newLoc = [[CLLocation alloc] initWithCoordinate:newLocation.coordinate altitude:newLocation.altitude horizontalAccuracy:newLocation.horizontalAccuracy verticalAccuracy:newLocation.verticalAccuracy course:newLocation.course speed:newLocation.speed timestamp:newLocation.timestamp];
-//    
-    
+
     if (lastLocUpdatedTime == 0.0)
         lastLocUpdatedTime = CACurrentMediaTime();
 
@@ -3370,10 +3329,9 @@
 //    if (_userHaloTrackingView)
 //        _userHaloTrackingView.hidden = ( ! CLLocationCoordinate2DIsValid(self.userLocation.coordinate) || self.userLocation.location.horizontalAccuracy > 10);
 
-    if ( ! [_annotations containsObject:self.userLocation])
+    if ( ! [_annotations containsObject:self.userLocation]) {
         [self addAnnotation:self.userLocation];
-    
-    
+    }
 }
 
 - (BOOL)locationManagerShouldDisplayHeadingCalibration:(CLLocationManager *)manager
