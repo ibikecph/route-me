@@ -2847,9 +2847,7 @@
         lastLocUpdatedTime = 0.0;
         self.cachedLocation = nil;
         
-        if ([_locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
-            [_locationManager requestWhenInUseAuthorization];
-        }
+        [_locationManager requestAlwaysAuthorization];
         [_locationManager startUpdatingLocation];
         [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidEnterBackgroundNotification object:nil];
         [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillEnterForegroundNotification object:nil];
@@ -3521,9 +3519,7 @@
         lastLocUpdatedTime = 0.0;
         self.cachedLocation = nil;
         if (_showsUserLocation == YES) {
-            if ([_locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
-                [_locationManager requestWhenInUseAuthorization];
-            }
+            [_locationManager requestAlwaysAuthorization];
             [_locationManager startUpdatingLocation];
         }        
         if (_userTrackingMode == RMUserTrackingModeFollowWithHeading) {
@@ -3537,9 +3533,7 @@
         lastLocUpdatedTime = 0.0;
         self.cachedLocation = nil;
         if (_showsUserLocation == YES) {
-            if ([_locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
-                [_locationManager requestWhenInUseAuthorization];
-            }
+            [_locationManager requestAlwaysAuthorization];
             [_locationManager startUpdatingLocation];
         }
         if (_userTrackingMode == RMUserTrackingModeFollowWithHeading) {
