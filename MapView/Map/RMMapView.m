@@ -537,8 +537,9 @@
         {
             dispatch_async(dispatch_get_main_queue(), ^(void)
             {
-                if (_delegateHasBeforeMapMove)
+                if (_delegateHasBeforeMapMove) {
                     [_delegate beforeMapMove:self byUser:flag];
+                }
             });
         }
 
@@ -550,8 +551,9 @@
             {
                 dispatch_async(dispatch_get_main_queue(), ^(void)
                 {
-                    if (_delegateHasAfterMapMove)
+                    if (_delegateHasAfterMapMove) {
                         [_delegate afterMapMove:self byUser:flag];
+                    }
                 });
             }];
         }
@@ -761,8 +763,9 @@
 
 //    RMLog(@"setMapCenterProjectedPoint: {%f,%f} -> {%.0f,%.0f}", centerProjectedPoint.x, centerProjectedPoint.y, mapScrollView.contentOffset.x, mapScrollView.contentOffset.y);
 
-    if ( ! animated)
+    if (!animated) {
         [_moveDelegateQueue setSuspended:NO];
+    }
 
     [self correctPositionOfAllAnnotations];
 }
@@ -2926,8 +2929,9 @@
     if (mode == _userTrackingMode)
         return;
 
-    if (mode == RMUserTrackingModeFollowWithHeading && ! CLLocationCoordinate2DIsValid(self.userLocation.coordinate))
+    if (mode == RMUserTrackingModeFollowWithHeading && ! CLLocationCoordinate2DIsValid(self.userLocation.coordinate)) {
         mode = RMUserTrackingModeNone;
+    }
 
     _userTrackingMode = mode;
 
@@ -2949,8 +2953,9 @@
         {
             self.showsUserLocation = YES;
 
-            if (self.userLocation)
-                [self locationManager:_locationManager didUpdateToLocation:self.userLocation.location fromLocation:self.userLocation.location];
+            if (self.userLocation.location) {
+                [self locationManager:_locationManager didUpdateLocations:@[self.userLocation.location]];
+            }
 
             if (_userLocationTrackingView || _userHeadingTrackingView || _userHaloTrackingView)
             {
@@ -3006,9 +3011,9 @@
                 [self zoomByFactor:exp2f(3 - [self zoom]) near:self.center animated:YES];
 
 
-            if (self.userLocation)
-                [self locationManager:_locationManager didUpdateToLocation:self.userLocation.location fromLocation:self.userLocation.location];
-
+            if (self.userLocation.location) {
+                [self locationManager:_locationManager didUpdateLocations:@[self.userLocation.location]];
+            }
             
             if (self.routingDelegate && [self.routingDelegate respondsToSelector:@selector(getCorrectedPosition)] && self.userTrackingMode == RMUserTrackingModeFollowWithHeading) {
                 
@@ -3071,8 +3076,9 @@
 // Returns nil if location should not be processed further
 - (CLLocation *)smoothLocation:(CLLocation *)newLocation {
 
-    if (lastLocUpdatedTime == 0.0)
+    if (lastLocUpdatedTime == 0.0) {
         lastLocUpdatedTime = CACurrentMediaTime();
+    }
 
     if (newLocation.coordinate.latitude == 0 && newLocation.coordinate.longitude == 0) {
         RMLog(@"Skipping location 0.0, 0.0! (You cannot walk on the water)");
@@ -3114,15 +3120,18 @@
     CLLocation *newLocation = locations.lastObject;
     CLLocation *loc = [[CLLocation alloc] initWithCoordinate:newLocation.coordinate altitude:newLocation.altitude horizontalAccuracy:newLocation.horizontalAccuracy verticalAccuracy:newLocation.verticalAccuracy course:newLocation.course speed:newLocation.speed timestamp:newLocation.timestamp];
     
-    if (loc == nil || !(loc = [self smoothLocation:loc]))
+    if (loc == nil || !(loc = [self smoothLocation:loc])) {
         return;
+    }
 
 //    NSLog(@"%@", loc);
 
-    if ( ! _showsUserLocation || _mapScrollView.isDragging || ! loc || ! CLLocationCoordinate2DIsValid(loc.coordinate))
+    if ( ! _showsUserLocation || _mapScrollView.isDragging || !loc || !CLLocationCoordinate2DIsValid(loc.coordinate)) {
         return;
+    }
     
-    if ([loc distanceFromLocation:oldLocation]) {
+    if (!self.userLocation.location ||
+        [loc distanceFromLocation:self.userLocation.location]) {
         
         self.userLocation.location = loc;
         
@@ -3133,8 +3142,6 @@
         if (self.routingDelegate && [self.routingDelegate respondsToSelector:@selector(getCorrectedPosition)]) {
             self.userLocation.location = [self.routingDelegate getCorrectedPosition];
         }
-        
-
         
     } else {
         /**
@@ -3239,93 +3246,11 @@
             }
         }
     }
-    
-    
-//    if ( ! _accuracyCircleAnnotation)
-//    {
-//        _accuracyCircleAnnotation = [[RMAnnotation annotationWithMapView:self coordinate:self.userLocation.location.coordinate andTitle:nil] retain];
-//        _accuracyCircleAnnotation.annotationType = kRMAccuracyCircleAnnotationTypeName;
-//        _accuracyCircleAnnotation.clusteringEnabled = NO;
-//        _accuracyCircleAnnotation.enabled = NO;
-//        _accuracyCircleAnnotation.layer = [[RMCircle alloc] initWithView:self radiusInMeters:self.userLocation.location.horizontalAccuracy];
-//        _accuracyCircleAnnotation.layer.zPosition = MAXFLOAT - 2; // was -MAXFLOAT
-//        _accuracyCircleAnnotation.isUserLocationAnnotation = YES;
-//
-//        ((RMCircle *)_accuracyCircleAnnotation.layer).lineColor = [UIColor colorWithRed:0.378 green:0.552 blue:0.827 alpha:0.7];
-//        ((RMCircle *)_accuracyCircleAnnotation.layer).fillColor = [UIColor colorWithRed:0.378 green:0.552 blue:0.827 alpha:0.15];
-//
-//        ((RMCircle *)_accuracyCircleAnnotation.layer).lineWidthInPixels = 2.0;
-//
-//        [self addAnnotation:_accuracyCircleAnnotation];
-//    }
-//
-//    if ([self.userLocation.location distanceFromLocation:oldLocation])
-//        _accuracyCircleAnnotation.coordinate = self.userLocation.location.coordinate;
-//
-//    if (self.userLocation.location.horizontalAccuracy != oldLocation.horizontalAccuracy)
-//        ((RMCircle *)_accuracyCircleAnnotation.layer).radiusInMeters = self.userLocation.location.horizontalAccuracy;
-
-    
-    
-    
-//    if ( ! _trackingHaloAnnotation)
-//    {
-//        _trackingHaloAnnotation = [[RMAnnotation annotationWithMapView:self coordinate:self.userLocation.location.coordinate andTitle:nil] retain];
-//        _trackingHaloAnnotation.annotationType = kRMTrackingHaloAnnotationTypeName;
-//        _trackingHaloAnnotation.clusteringEnabled = NO;
-//        _trackingHaloAnnotation.enabled = NO;
-//
-//        // create image marker
-//        //
-//        _trackingHaloAnnotation.layer = [[RMMarker alloc] initWithUIImage:[UIImage imageNamed:@"TrackingDotHalo.png"]];
-//        _trackingHaloAnnotation.layer.zPosition = MAXFLOAT - 1; //-MAXFLOAT + 1;
-//        _trackingHaloAnnotation.isUserLocationAnnotation = YES;
-//
-//        [CATransaction begin];
-//        [CATransaction setAnimationDuration:2.5];
-//        [CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
-//
-//        // scale out radially
-//        //
-//        CABasicAnimation *boundsAnimation = [CABasicAnimation animationWithKeyPath:@"transform"];
-//        boundsAnimation.repeatCount = MAXFLOAT;
-//        boundsAnimation.fromValue = [NSValue valueWithCATransform3D:CATransform3DMakeScale(0.1, 0.1, 1.0)];
-//        boundsAnimation.toValue   = [NSValue valueWithCATransform3D:CATransform3DMakeScale(2.0, 2.0, 1.0)];
-//        boundsAnimation.removedOnCompletion = NO;
-//        boundsAnimation.fillMode = kCAFillModeForwards;
-//
-//        [_trackingHaloAnnotation.layer addAnimation:boundsAnimation forKey:@"animateScale"];
-//
-//        // go transparent as scaled out
-//        //
-//        CABasicAnimation *opacityAnimation = [CABasicAnimation animationWithKeyPath:@"opacity"];
-//        opacityAnimation.repeatCount = MAXFLOAT;
-//        opacityAnimation.fromValue = [NSNumber numberWithFloat:1.0];
-//        opacityAnimation.toValue   = [NSNumber numberWithFloat:-1.0];
-//        opacityAnimation.removedOnCompletion = NO;
-//        opacityAnimation.fillMode = kCAFillModeForwards;
-//
-//        [_trackingHaloAnnotation.layer addAnimation:opacityAnimation forKey:@"animateOpacity"];
-//
-//        [CATransaction commit];
-//
-//        [self addAnnotation:_trackingHaloAnnotation];
-//    }
-//
-//    if ([loc distanceFromLocation:oldLocation])
-//        _trackingHaloAnnotation.coordinate = self.userLocation.location.coordinate;
 
     self.userLocation.layer.hidden = ( ! CLLocationCoordinate2DIsValid(self.userLocation.coordinate) || self.userTrackingMode == RMUserTrackingModeFollowWithHeading);
 
     if (_userLocationTrackingView)
         _userLocationTrackingView.hidden = ! CLLocationCoordinate2DIsValid(self.userLocation.coordinate);
-
-//    _accuracyCircleAnnotation.layer.hidden = self.userLocation.location.horizontalAccuracy <= 10;
-
-//    _trackingHaloAnnotation.layer.hidden = ( ! CLLocationCoordinate2DIsValid(self.userLocation.coordinate) || self.userLocation.location.horizontalAccuracy > 10 || self.userTrackingMode == RMUserTrackingModeFollowWithHeading);
-
-//    if (_userHaloTrackingView)
-//        _userHaloTrackingView.hidden = ( ! CLLocationCoordinate2DIsValid(self.userLocation.coordinate) || self.userLocation.location.horizontalAccuracy > 10);
 
     if ( ! [_annotations containsObject:self.userLocation]) {
         [self addAnnotation:self.userLocation];
@@ -3349,9 +3274,6 @@
     } else {
         _userLocationTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
     }
-//    _userLocationTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
-
-    //    _userHeadingTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
 }
 
 - (void)rotateArrow:(double)newHeading {
@@ -3407,46 +3329,26 @@
 
     if (/*newHeading.trueHeading != 0 &&*/ self.userTrackingMode == RMUserTrackingModeFollowWithHeading)
    {
-//        if (_userHeadingTrackingView.alpha < 1.0) {
-//            [UIView animateWithDuration:0.5 animations:^(void) { _userHeadingTrackingView.alpha = 1.0; }];
-//        }
 
-//        [CATransaction begin];
-//        [CATransaction setAnimationDuration:0.1];
-//        [CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
-//        [UIView animateWithDuration:0.1
-//                              delay:0.0
-//                            options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationCurveEaseInOut
-//                         animations:^(void)
-//                         {
-
-                             if (self.routingDelegate && [self.routingDelegate respondsToSelector:@selector(getCorrectedHeading)]) {
-//                                 [self rotateMap:[self.routingDelegate getCorrectedHeading]];
-                                 [self updateHeading];
-                                 
-                                 
-//                                 _userHeadingTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
-
-//                                 _userLocationTrackingView.transform = CGAffineTransformMakeRotation(viewAngle);
-                             } else {
-                                 CGFloat angle = (M_PI / -180) * self.userLocation.heading.trueHeading;
-                                 _mapTransform = CGAffineTransformMakeRotation(angle);
-                                 _annotationTransform = CATransform3DMakeAffineTransform(CGAffineTransformMakeRotation(-angle));
-                                 
-                                 _mapScrollView.transform = _mapTransform;
-                                 _overlayView.transform   = _mapTransform;
-                                 
-                                 for (RMAnnotation *annotation in _annotations)
-                                     if ([annotation.layer isKindOfClass:[RMMarker class]] && ! annotation.isUserLocationAnnotation)
-                                         annotation.layer.transform = _annotationTransform;
-                                 
-                                 [self correctPositionOfAllAnnotations];
-                             }
-                             
-                             
-//                         }
-//                         completion:nil];
-//        [CATransaction commit];
+       if (self.routingDelegate && [self.routingDelegate respondsToSelector:@selector(getCorrectedHeading)]) {
+//          [self rotateMap:[self.routingDelegate getCorrectedHeading]];
+           [self updateHeading];
+             
+             
+         } else {
+             CGFloat angle = (M_PI / -180) * self.userLocation.heading.trueHeading;
+             _mapTransform = CGAffineTransformMakeRotation(angle);
+             _annotationTransform = CATransform3DMakeAffineTransform(CGAffineTransformMakeRotation(-angle));
+             
+             _mapScrollView.transform = _mapTransform;
+             _overlayView.transform   = _mapTransform;
+             
+             for (RMAnnotation *annotation in _annotations)
+                 if ([annotation.layer isKindOfClass:[RMMarker class]] && ! annotation.isUserLocationAnnotation)
+                     annotation.layer.transform = _annotationTransform;
+             
+             [self correctPositionOfAllAnnotations];
+         }
     }
 }
 
