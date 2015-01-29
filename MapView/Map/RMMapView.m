@@ -741,7 +741,7 @@
 
 - (void)setCenterProjectedPoint:(RMProjectedPoint)centerProjectedPoint
 {
-    [self setCenterProjectedPoint:centerProjectedPoint animated:YES];
+    [self setCenterProjectedPoint:centerProjectedPoint animated:NO];
 }
 
 - (void)setCenterProjectedPoint:(RMProjectedPoint)centerProjectedPoint animated:(BOOL)animated
