@@ -178,6 +178,8 @@
 		4C9CDAFA1705D4B900C28D70 /* RMPermanentCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RMPermanentCache.m; sourceTree = "<group>"; };
 		4C9CDAFD1705D87700C28D70 /* SMPermanentTileSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMPermanentTileSource.h; sourceTree = "<group>"; };
 		4C9CDAFE1705D87800C28D70 /* SMPermanentTileSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMPermanentTileSource.m; sourceTree = "<group>"; };
+		4EE26C241B145F8200F5EFAD /* TrackingDot@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "TrackingDot@3x.png"; path = "Resources/TrackingDot@3x.png"; sourceTree = "<group>"; };
+		4EE26C311B14628D00F5EFAD /* TrackingDot.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = TrackingDot.png; path = Resources/TrackingDot.png; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		96492C3F0FA8AD3400EBA6D2 /* RMGlobalConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMGlobalConstants.h; sourceTree = "<group>"; };
 		B1EB26C510B5D8E6009F8658 /* RMNotifications.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMNotifications.h; sourceTree = "<group>"; };
@@ -242,7 +244,6 @@
 		DD8FD7531559E4A40044D96F /* RMUserLocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RMUserLocation.m; sourceTree = "<group>"; };
 		DD8FD7631559EE120044D96F /* HeadingAngleSmall.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = HeadingAngleSmall.png; path = Resources/HeadingAngleSmall.png; sourceTree = "<group>"; };
 		DD8FD7641559EE120044D96F /* HeadingAngleSmall@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "HeadingAngleSmall@2x.png"; path = "Resources/HeadingAngleSmall@2x.png"; sourceTree = "<group>"; };
-		DD8FD7651559EE120044D96F /* TrackingDot.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = TrackingDot.png; path = Resources/TrackingDot.png; sourceTree = "<group>"; };
 		DD8FD7661559EE120044D96F /* TrackingDot@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "TrackingDot@2x.png"; path = "Resources/TrackingDot@2x.png"; sourceTree = "<group>"; };
 		DD8FD7691559EE120044D96F /* TrackingDotHalo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "TrackingDotHalo@2x.png"; path = "Resources/TrackingDotHalo@2x.png"; sourceTree = "<group>"; };
 		DD8FD76C1559EE120044D96F /* TrackingDotHalo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = TrackingDotHalo.png; path = Resources/TrackingDotHalo.png; sourceTree = "<group>"; };
@@ -538,8 +539,9 @@
 				DD8FD7641559EE120044D96F /* HeadingAngleSmall@2x.png */,
 				DD49B8A915E2CE4E0055CCEE /* LoadingTile.png */,
 				DD49B8A815E2CE4E0055CCEE /* LoadingTileZoom.png */,
-				DD8FD7651559EE120044D96F /* TrackingDot.png */,
+				4EE26C311B14628D00F5EFAD /* TrackingDot.png */,
 				DD8FD7661559EE120044D96F /* TrackingDot@2x.png */,
+				4EE26C241B145F8200F5EFAD /* TrackingDot@3x.png */,
 				DD8FD76C1559EE120044D96F /* TrackingDotHalo.png */,
 				DD8FD7691559EE120044D96F /* TrackingDotHalo@2x.png */,
 				DDA6B8C2155CAB9A003DB5D8 /* TrackingHeading.png */,

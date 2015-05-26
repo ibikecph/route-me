@@ -2831,7 +2831,7 @@
     if (newShowsUserLocation)
     {
         RMRequireAsset(@"HeadingAngleSmall.png");
-        RMRequireAsset(@"TrackingDot@2x.png");
+        RMRequireAsset(@"TrackingDot.png");
         RMRequireAsset(@"arrow_position.png");
         RMRequireAsset(@"TrackingDotHalo.png");
         RMRequireAsset(@"TrackingHeading.png");
